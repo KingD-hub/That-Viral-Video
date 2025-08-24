@@ -69,14 +69,24 @@
         // Load videos from HTML files
         async function loadVideos() {
             try {
-                // For now, use static videos
-                // In the future, this could scan the videos folder for HTML files
-                allVideos = getStaticVideos();
-                filteredVideos = [...allVideos];
-                displayVideos();
-                setupPagination();
+                // Try to load from API first (for dynamic videos)
+                const response = await fetch('/.netlify/functions/videos');
+                const data = await response.json();
+                
+                if (data.videos && data.videos.length > 0) {
+                    allVideos = data.videos;
+                    filteredVideos = [...allVideos];
+                    displayVideos();
+                    setupPagination();
+                    return;
+                }
+                
+                // Fallback to static videos
+                throw new Error('No videos from API');
+                
             } catch (error) {
-                console.error('Error loading videos:', error);
+                console.error('Error loading videos from API:', error);
+                // Fallback to static videos
                 allVideos = getStaticVideos();
                 filteredVideos = [...allVideos];
                 displayVideos();

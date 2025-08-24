@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Build script to generate HTML files from markdown
-function buildHTMLFiles() {
+async function buildHTMLFiles() {
     try {
         const videosFolder = path.join(__dirname, 'videos');
         
@@ -34,10 +34,11 @@ function buildHTMLFiles() {
         }
         
         console.log('Build completed successfully!');
+        return { success: true, filesProcessed: mdFiles.length };
         
     } catch (error) {
         console.error('Build failed:', error);
-        process.exit(1);
+        throw error;
     }
 }
 
