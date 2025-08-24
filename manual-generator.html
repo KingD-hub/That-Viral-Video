@@ -84,13 +84,6 @@
         .copy-btn:hover {
             background: #1976d2;
         }
-        .error {
-            background: #f44336;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
     </style>
 </head>
 <body>
@@ -132,16 +125,14 @@
                 <input type="text" id="filename" placeholder="e.g., test-video" value="test">
             </div>
             
-            <button type="button" id="generateBtn">🚀 Generate HTML</button>
+            <button type="button" onclick="generateHTML()">🚀 Generate HTML</button>
         </form>
         
         <div id="output" style="display: none;">
             <h3>Generated HTML Code:</h3>
-            <button class="copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
             <div id="htmlOutput" class="output"></div>
         </div>
-        
-        <div id="error" class="error" style="display: none;"></div>
         
         <div style="margin-top: 30px;">
             <a href="/" style="color: #ff6b6b; text-decoration: none;">← Back to Main Site</a>
@@ -149,27 +140,20 @@
     </div>
 
     <script>
-        // Wait for DOM to load
-        document.addEventListener('DOMContentLoaded', function() {
-            const generateBtn = document.getElementById('generateBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const output = document.getElementById('output');
-            const htmlOutput = document.getElementById('htmlOutput');
-            const errorDiv = document.getElementById('error');
+        function generateHTML() {
+            console.log('Generate button clicked!');
             
-            // Generate HTML button
-            generateBtn.addEventListener('click', function() {
-                try {
-                    const title = document.getElementById('title').value || 'Video Title';
-                    const description = document.getElementById('description').value || 'Video description';
-                    const thumbnail = document.getElementById('thumbnail').value || '';
-                    const videoEmbed = document.getElementById('videoEmbed').value || '<!-- Video embed will be here -->';
-                    const filename = document.getElementById('filename').value || 'video';
-                    
-                    const currentYear = new Date().getFullYear();
-                    const currentDate = new Date().toISOString().split('T')[0];
-                    
-                    const htmlCode = `<!DOCTYPE html>
+            const title = document.getElementById('title').value || 'Video Title';
+            const description = document.getElementById('description').value || 'Video description';
+            const videoEmbed = document.getElementById('videoEmbed').value || '<!-- Video embed will be here -->';
+            const currentYear = new Date().getFullYear();
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            console.log('Title:', title);
+            console.log('Description:', description);
+            console.log('Video Embed:', videoEmbed);
+            
+            const htmlCode = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -294,58 +278,68 @@
     </script>
 </body>
 </html>`;
-                    
-                    htmlOutput.textContent = htmlCode;
-                    output.style.display = 'block';
-                    errorDiv.style.display = 'none';
-                    
-                    console.log('HTML generated successfully!');
-                    
-                } catch (error) {
-                    console.error('Error generating HTML:', error);
-                    errorDiv.textContent = 'Error generating HTML: ' + error.message;
-                    errorDiv.style.display = 'block';
-                    output.style.display = 'none';
-                }
-            });
             
-            // Copy to clipboard button
-            copyBtn.addEventListener('click', function() {
-                try {
-                    const text = htmlOutput.textContent;
-                    
-                    if (navigator.clipboard && window.isSecureContext) {
-                        navigator.clipboard.writeText(text).then(function() {
-                            alert('HTML code copied to clipboard!');
-                        }).catch(function(err) {
-                            throw new Error('Clipboard API failed');
-                        });
-                    } else {
-                        // Fallback for older browsers
-                        const textArea = document.createElement('textarea');
-                        textArea.value = text;
-                        textArea.style.position = 'fixed';
-                        textArea.style.left = '-999999px';
-                        textArea.style.top = '-999999px';
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        
-                        const successful = document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        
-                        if (successful) {
-                            alert('HTML code copied to clipboard!');
-                        } else {
-                            throw new Error('Copy command failed');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error copying to clipboard:', error);
-                    alert('Failed to copy to clipboard. Please select and copy the text manually.');
+            console.log('HTML code generated, length:', htmlCode.length);
+            
+            document.getElementById('htmlOutput').textContent = htmlCode;
+            document.getElementById('output').style.display = 'block';
+            
+            console.log('Output displayed!');
+        }
+        
+        function copyToClipboard() {
+            console.log('Copy button clicked!');
+            
+            const htmlOutput = document.getElementById('htmlOutput');
+            const text = htmlOutput.textContent;
+            
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        alert('HTML code copied to clipboard!');
+                    }).catch(function(err) {
+                        console.error('Clipboard API failed:', err);
+                        fallbackCopy();
+                    });
+                } else {
+                    fallbackCopy();
                 }
-            });
-        });
+            } catch (error) {
+                console.error('Copy error:', error);
+                fallbackCopy();
+            }
+        }
+        
+        function fallbackCopy() {
+            const htmlOutput = document.getElementById('htmlOutput');
+            const text = htmlOutput.textContent;
+            
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    alert('HTML code copied to clipboard!');
+                } else {
+                    alert('Failed to copy. Please select and copy the text manually.');
+                }
+            } catch (err) {
+                document.body.removeChild(textArea);
+                alert('Failed to copy. Please select and copy the text manually.');
+            }
+        }
+        
+        // Test on page load
+        console.log('Page loaded, functions defined!');
     </script>
 </body>
 </html>
