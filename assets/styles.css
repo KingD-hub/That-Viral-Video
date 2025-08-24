@@ -94,6 +94,21 @@ header p {
     pointer-events: none;
 }
 
+/* Loading and No Videos States */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #ccc;
+    font-size: 18px;
+}
+
+.no-videos {
+    text-align: center;
+    padding: 40px;
+    color: #ccc;
+    font-size: 18px;
+}
+
 main {
     max-width: 1200px;
     margin: 0 auto;
