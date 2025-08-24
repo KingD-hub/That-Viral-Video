@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = ""
+  command = "node build.js"
   functions = "api"
 
 [build.environment]
@@ -11,10 +11,7 @@
   to = "/admin/index.html"
   status = 200
 
-[[redirects]]
-  from = "/videos/*.html"
-  to = "/.netlify/functions/video-page"
-  status = 200
+
 
 [[redirects]]
   from = "/*"

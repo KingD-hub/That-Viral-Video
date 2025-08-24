@@ -66,27 +66,17 @@
         const videosPerPage = 5;
         let filteredVideos = [];
 
-        // Load videos from Netlify CMS
+        // Load videos from HTML files
         async function loadVideos() {
             try {
-                // Try to load from API first
-                const response = await fetch('/.netlify/functions/videos');
-                const data = await response.json();
-                
-                if (data.videos && data.videos.length > 0) {
-                    allVideos = data.videos;
-                    filteredVideos = [...allVideos];
-                    displayVideos();
-                    setupPagination();
-                    return;
-                }
-                
-                // Fallback to static videos if API fails
-                throw new Error('No videos from API');
-                
+                // For now, use static videos
+                // In the future, this could scan the videos folder for HTML files
+                allVideos = getStaticVideos();
+                filteredVideos = [...allVideos];
+                displayVideos();
+                setupPagination();
             } catch (error) {
-                console.error('Error loading videos from API:', error);
-                // Fallback to static videos
+                console.error('Error loading videos:', error);
                 allVideos = getStaticVideos();
                 filteredVideos = [...allVideos];
                 displayVideos();
