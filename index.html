@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DailyClips - Hot Videos</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <!-- Ad Manager Script -->
+    <script src="assets/ad-manager.js"></script>
+</head>
+<body>
+    <header>
+        <h1>DailyClips</h1>
+        <p>Hot videos updated daily</p>
+        <div style="margin-top: 10px;">
+            <a href="admin/" style="color: #ff6b6b; text-decoration: none; font-size: 14px; padding: 5px 10px; border: 1px solid #ff6b6b; border-radius: 5px;">🔧 Admin Panel</a>
+    </div>
+  </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" class="search-box" id="searchBox" placeholder="Search videos..." onkeyup="searchVideos()">
+    </div>
+
+    <main>
+        <div class="video-grid" id="videoGrid">
+            <!-- Video 1 -->
+            <div class="video-card" data-title="hardsex BBC hdporn xxx" data-description="Hot BBC action in HD quality. Click to watch now." data-tags="cheating,wife,moriah mills">
+                <a href="videos/first-video.html">
+                    <div class="thumb-container">
+                        <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/39/83/47/39834767c87518f4e747459db314f345/39834767c87518f4e747459db314f345.13.jpg" alt="hardsex BBC hdporn xxx">
+                    </div>
+                    <div class="card-content">
+                        <h2>hardsex BBC hdporn xxx</h2>
+                        <p>Hot BBC action in HD quality. Click to watch now.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Video 2 -->
+            <div class="video-card" data-title="Leak Video Of Miracle From Her University Days" data-description="Spicy leaks that will leave you wanting more." data-tags="leaks,hardcore,spicy">
+                <a href="videos/second-video.html">
+                    <div class="thumb-container">
+                        <img src="https://drive.google.com/thumbnail?id=1cisRBdBC_jhh-PfENmhGtwAl0KJatDgv" alt="Leak Video Of Miracle From Her University Days">
+                    </div>
+                    <div class="card-content">
+                        <h2>Leak Video Of Miracle From Her University Days</h2>
+                        <p>Spicy leaks that will leave you wanting more.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Video 3 -->
+            <div class="video-card" data-title="Asian Teen Takes It All" data-description="Young Asian beauty ready for action. Click to watch now." data-tags="asian,teen,beauty">
+                <a href="videos/third-video.html">
+                    <div class="thumb-container">
+                        <img src="https://pix-cdn77.phncdn.com/c6371/videos/202507/20/16545975/original_16545975.mp4/plain/ex:1:no/bg:0:0:0/rs:fit:320:180/vts:52?hash=Yb2eC-1hq5CrPno08yA5OHauuyc=&validto=4891363200" alt="Asian Teen Takes It All">
+                    </div>
+                    <div class="card-content">
+                        <h2>Asian Teen Takes It All</h2>
+                        <p>Young Asian beauty ready for action. Click to watch now.</p>
+                    </div>
+                </a>
+            </div>
+
+                        <!-- Video 4 -->
+            <div class="video-card" data-title="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal" data-description="Dick in between ass cheeks. Click to watch now." data-tags="cheating,wife,moriah mills">
+                <a href="videos/fourth-video.html">
+                    <div class="thumb-container">
+                        <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/22/e5/59/22e55995427a107de19f41cffd1ad2b2/22e55995427a107de19f41cffd1ad2b2.9.jpg" alt="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal">
+                    </div>
+                    <div class="card-content">
+                        <h2>Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal</h2>
+                        <p>Dick in between ass cheeks. Click to watch now.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Video 5 -->
+            <div class="video-card" data-title="She let him fuck her ass hole for job" data-description="Job interview takes an unexpected turn." data-tags="job,interview,ass">
+                <a href="videos/fifth-video.html">
+                    <div class="thumb-container">
+                        <img src="https://drive.google.com/thumbnail?id=1P69-qsgWKSD173hkuyWjUeh49DOth2ke" alt="She let him fuck her ass hole for job">
+                    </div>
+                    <div class="card-content">
+                        <h2>She let him fuck her ass hole for job</h2>
+                        <p>Job interview takes an unexpected turn.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <span class="current">1</span>
+            <a href="page2.html">2</a>
+            <a href="page3.html">3</a>
+            <a href="page4.html">4</a>
+            <a href="page5.html">5</a>
+            <a href="page2.html">Next →</a>
+        </div>
+
+        <!-- Banner Ad Slot (will be populated by Ad Manager) -->
+        <div class="banner-slot">
+            <!-- Banner ads will be loaded here dynamically -->
+        </div>
+  </main>
+
+    <footer>
+        <p>&copy; 2024 DailyClips. All rights reserved.</p>
+        <a href="legal.html">Legal</a>
+  </footer>
+
+  <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+  </script>
+</body>
+</html>

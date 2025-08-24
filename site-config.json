@@ -1,0 +1,16 @@
+{
+  "site_title": "DailyClips",
+  "site_description": "Hot videos updated daily",
+  "banner_ad_code": "<script type=\"text/javascript\">atOptions = {'key' : '8222901a4a0a0abca1bf6e66669f066d','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};</script><script type=\"text/javascript\" src=\"//www.highperformanceformat.com/8222901a4a0a0abca1bf6e66669f066d/invoke.js\"></script>",
+  "popunder_ad_code": "<script type='text/javascript' src='//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js'></script>",
+  "social_bar_ad_code": "<script type='text/javascript' src='//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js'></script>",
+  "social_bar_position": "bottom",
+  "social_bar_visible": true,
+  "header_native_banner_code": "<script async=\"async\" data-cfasync=\"false\" src=\"//pl27495792.profitableratecpm.com/8e51db288c92c2ddbe02fec1d76fb9ae/invoke.js\"></script><div id=\"container-8e51db288c92c2ddbe02fec1d76fb9ae\"></div>",
+  "sidebar_native_banner_code": "<script async=\"async\" data-cfasync=\"false\" src=\"//pl27495792.profitableratecpm.com/8e51db288c92c2ddbe02fec1d76fb9ae/invoke.js\"></script><div id=\"container-8e51db288c92c2ddbe02fec1d76fb9ae\"></div>",
+  "content_native_banner_code": "<script async=\"async\" data-cfasync=\"false\" src=\"//pl27495792.profitableratecpm.com/8e51db288c92c2ddbe02fec1d76fb9ae/invoke.js\"></script><div id=\"container-8e51db288c92c2ddbe02fec1d76fb9ae\"></div>",
+  "native_banners_visible": true,
+  "videos_per_page": 5,
+  "enable_search": true,
+  "enable_pagination": true
+}
