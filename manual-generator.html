@@ -84,6 +84,13 @@
         .copy-btn:hover {
             background: #1976d2;
         }
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -125,14 +132,16 @@
                 <input type="text" id="filename" placeholder="e.g., test-video" value="test">
             </div>
             
-            <button type="button" onclick="generateHTML()">🚀 Generate HTML</button>
+            <button type="button" id="generateBtn">🚀 Generate HTML</button>
         </form>
         
         <div id="output" style="display: none;">
             <h3>Generated HTML Code:</h3>
-            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            <button class="copy-btn" id="copyBtn">📋 Copy to Clipboard</button>
             <div id="htmlOutput" class="output"></div>
         </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
         
         <div style="margin-top: 30px;">
             <a href="/" style="color: #ff6b6b; text-decoration: none;">← Back to Main Site</a>
@@ -140,16 +149,27 @@
     </div>
 
     <script>
-        function generateHTML() {
-            const title = document.getElementById('title').value || 'Video Title';
-            const description = document.getElementById('description').value || 'Video description';
-            const thumbnail = document.getElementById('thumbnail').value || '';
-            const videoEmbed = document.getElementById('videoEmbed').value || '<!-- Video embed will be here -->';
-            const filename = document.getElementById('filename').value || 'video';
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const output = document.getElementById('output');
+            const htmlOutput = document.getElementById('htmlOutput');
+            const errorDiv = document.getElementById('error');
             
-            const currentYear = new Date().getFullYear();
-            
-            const htmlCode = `<!DOCTYPE html>
+            // Generate HTML button
+            generateBtn.addEventListener('click', function() {
+                try {
+                    const title = document.getElementById('title').value || 'Video Title';
+                    const description = document.getElementById('description').value || 'Video description';
+                    const thumbnail = document.getElementById('thumbnail').value || '';
+                    const videoEmbed = document.getElementById('videoEmbed').value || '<!-- Video embed will be here -->';
+                    const filename = document.getElementById('filename').value || 'video';
+                    
+                    const currentYear = new Date().getFullYear();
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    
+                    const htmlCode = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -177,7 +197,7 @@
     <main class="container">
         <article class="player-article">
             <h1>${title}</h1>
-            <p class="meta">Posted ${new Date().toISOString().split('T')[0]} · 18+</p>
+            <p class="meta">Posted ${currentDate} · 18+</p>
 
             <div class="player-wrap">
                 <div class="responsive-embed">
@@ -274,29 +294,58 @@
     </script>
 </body>
 </html>`;
-            
-            document.getElementById('htmlOutput').textContent = htmlCode;
-            document.getElementById('output').style.display = 'block';
-        }
-        
-        function copyToClipboard() {
-            const htmlOutput = document.getElementById('htmlOutput');
-            const text = htmlOutput.textContent;
-            
-            navigator.clipboard.writeText(text).then(function() {
-                alert('HTML code copied to clipboard!');
-            }).catch(function(err) {
-                console.error('Could not copy text: ', err);
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                alert('HTML code copied to clipboard!');
+                    
+                    htmlOutput.textContent = htmlCode;
+                    output.style.display = 'block';
+                    errorDiv.style.display = 'none';
+                    
+                    console.log('HTML generated successfully!');
+                    
+                } catch (error) {
+                    console.error('Error generating HTML:', error);
+                    errorDiv.textContent = 'Error generating HTML: ' + error.message;
+                    errorDiv.style.display = 'block';
+                    output.style.display = 'none';
+                }
             });
-        }
+            
+            // Copy to clipboard button
+            copyBtn.addEventListener('click', function() {
+                try {
+                    const text = htmlOutput.textContent;
+                    
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text).then(function() {
+                            alert('HTML code copied to clipboard!');
+                        }).catch(function(err) {
+                            throw new Error('Clipboard API failed');
+                        });
+                    } else {
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = text;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        if (successful) {
+                            alert('HTML code copied to clipboard!');
+                        } else {
+                            throw new Error('Copy command failed');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error copying to clipboard:', error);
+                    alert('Failed to copy to clipboard. Please select and copy the text manually.');
+                }
+            });
+        });
     </script>
 </body>
 </html>
