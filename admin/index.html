@@ -14,18 +14,12 @@
             overflow-x: hidden;
         }
         
-        /* Hide our custom header when CMS is loaded */
         .admin-header {
             text-align: center;
             margin-bottom: 20px;
             padding: 20px;
             background: white;
             border-bottom: 1px solid #e0e0e0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .admin-header.hidden {
-            display: none;
         }
         
         .admin-header h1 {
@@ -46,11 +40,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: opacity 0.3s ease;
-        }
-        
-        .identity-widget.hidden {
-            display: none;
         }
         
         .cms-container {
@@ -59,57 +48,15 @@
             min-height: 100vh;
         }
         
-        /* Fix Netlify CMS layout issues */
+        /* Simple CMS styling */
         .cms-container .cms {
             margin: 0 !important;
             padding: 0 !important;
         }
         
-        /* Ensure form fields are fully visible */
-        .cms-container input,
-        .cms-container textarea,
-        .cms-container select {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* Fix header obstruction - make CMS header fixed */
-        .cms-container .cms-header {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            z-index: 1000 !important;
-            background: white !important;
-            border-bottom: 1px solid #e0e0e0 !important;
-        }
-        
-        /* Ensure content area is properly spaced below fixed header */
+        /* Ensure CMS takes full height */
         .cms-container .cms-content {
-            padding-top: 120px !important;
-            margin-top: 0 !important;
-            min-height: calc(100vh - 120px) !important;
-        }
-        
-        /* Fix form field visibility */
-        .cms-container .cms-editor {
-            padding-top: 20px !important;
-        }
-        
-        /* Ensure all form elements are visible */
-        .cms-container .cms-field {
-            margin-bottom: 20px !important;
-        }
-        
-        .cms-container .cms-field input,
-        .cms-container .cms-field textarea,
-        .cms-container .cms-field select {
-            width: 100% !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-            padding: 10px !important;
-            border: 1px solid #ddd !important;
-            border-radius: 4px !important;
+            min-height: 100vh !important;
         }
         
         /* Mobile responsiveness */
@@ -124,10 +71,6 @@
             
             .identity-widget {
                 margin: 0 15px 20px 15px;
-            }
-            
-            .cms-container .cms-content {
-                padding-top: 100px !important;
             }
         }
     </style>
@@ -160,76 +103,51 @@
             });
         }
         
-        // Fix CMS layout and hide custom header when CMS loads
+        // Simple CMS loading check
         document.addEventListener('DOMContentLoaded', function() {
             const adminHeader = document.querySelector('.admin-header');
             const identityWidget = document.querySelector('.identity-widget');
-            
-            // Function to hide custom elements when CMS loads
-            function hideCustomElements() {
-                if (adminHeader) adminHeader.classList.add('hidden');
-                if (identityWidget) identityWidget.classList.add('hidden');
-            }
-            
-            // Function to fix CMS layout
-            function fixCMSLayout() {
-                const cmsHeader = document.querySelector('.cms-header');
-                const cmsContent = document.querySelector('.cms-content');
-                const cmsEditor = document.querySelector('.cms-editor');
-                
-                if (cmsHeader && cmsContent) {
-                    // Ensure proper spacing
-                    cmsContent.style.paddingTop = '120px';
-                    cmsContent.style.marginTop = '0';
-                    cmsContent.style.minHeight = 'calc(100vh - 120px)';
-                }
-                
-                if (cmsEditor) {
-                    cmsEditor.style.paddingTop = '20px';
-                }
-                
-                // Fix form field visibility
-                const formFields = document.querySelectorAll('.cms-field input, .cms-field textarea, .cms-field select');
-                formFields.forEach(field => {
-                    field.style.width = '100%';
-                    field.style.maxWidth = '100%';
-                    field.style.boxSizing = 'border-box';
-                    field.style.padding = '10px';
-                    field.style.border = '1px solid #ddd';
-                    field.style.borderRadius = '4px';
-                });
-            }
             
             // Check for CMS loading
             let cmsCheckInterval = setInterval(function() {
                 const cms = document.querySelector('.cms');
                 if (cms) {
                     clearInterval(cmsCheckInterval);
-                    hideCustomElements();
                     
-                    // Wait a bit more for CMS to fully initialize
-                    setTimeout(fixCMSLayout, 500);
+                    // Hide custom elements when CMS loads
+                    if (adminHeader) adminHeader.style.display = 'none';
+                    if (identityWidget) identityWidget.style.display = 'none';
                     
-                    // Also fix layout when navigating between sections
-                    const observer = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(mutation) {
-                            if (mutation.type === 'childList') {
-                                setTimeout(fixCMSLayout, 100);
-                            }
-                        });
-                    });
-                    
-                    observer.observe(cms, { childList: true, subtree: true });
+                    console.log('CMS loaded successfully');
                 }
             }, 100);
             
-            // Fallback: if CMS doesn't load within 5 seconds, show custom elements
+            // Fallback: if CMS doesn't load within 10 seconds
             setTimeout(function() {
                 if (!document.querySelector('.cms')) {
                     clearInterval(cmsCheckInterval);
-                    console.log('CMS not detected, showing custom elements');
+                    console.log('CMS failed to load, showing error message');
+                    
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'text-align: center; padding: 50px; background: white; margin: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);';
+                    errorDiv.innerHTML = `
+                        <h2 style="color: #ff6b6b;">⚠️ CMS Loading Issue</h2>
+                        <p>Netlify CMS is not loading properly. This could be due to:</p>
+                        <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                            <li>Netlify Identity not enabled</li>
+                            <li>Git Gateway not configured</li>
+                            <li>Repository access issues</li>
+                        </ul>
+                        <p><strong>Please check your Netlify settings:</strong></p>
+                        <p>1. Go to your Netlify dashboard</p>
+                        <p>2. Enable Identity service</p>
+                        <p>3. Enable Git Gateway</p>
+                        <p>4. Invite yourself as a user</p>
+                    `;
+                    document.body.appendChild(errorDiv);
                 }
-            }, 5000);
+            }, 10000);
         });
     </script>
 </body>
