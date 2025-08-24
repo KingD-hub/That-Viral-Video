@@ -8,10 +8,13 @@ class AdManager {
     async init() {
         try {
             // Load site configuration
-            const response = await fetch('/site-config.json');
+            const response = await fetch('./site-config.json');
+            if (!response.ok) {
+                throw new Error('Config not found');
+            }
             this.config = await response.json();
             
-            // Initialize ads
+            // Initialize ads only if config loaded successfully
             this.initPopunderAd();
             this.initBannerAd();
             this.initSocialBarAd();
@@ -59,133 +62,166 @@ class AdManager {
 
     // Create Social Bar Ad
     createSocialBarAd() {
-        const socialBar = document.createElement('div');
-        socialBar.id = 'social-bar-ad';
-        socialBar.className = `social-bar-ad social-bar-${this.config.social_bar_position}`;
-        socialBar.innerHTML = this.config.social_bar_ad_code;
-        
-        // Add drag functionality
-        this.makeDraggable(socialBar);
-        
-        // Add close button
-        this.addCloseButton(socialBar);
-        
-        document.body.appendChild(socialBar);
+        try {
+            const socialBar = document.createElement('div');
+            socialBar.id = 'social-bar-ad';
+            socialBar.className = `social-bar-ad social-bar-${this.config.social_bar_position}`;
+            socialBar.innerHTML = this.config.social_bar_ad_code;
+            
+            // Add drag functionality
+            this.makeDraggable(socialBar);
+            
+            // Add close button
+            this.addCloseButton(socialBar);
+            
+            document.body.appendChild(socialBar);
+        } catch (error) {
+            console.log('Social bar ad creation failed:', error);
+        }
     }
 
     // Create Header Native Banner
     createHeaderNativeBanner() {
-        if (this.config?.header_native_banner_code) {
-            const headerBanner = document.createElement('div');
-            headerBanner.className = 'native-banner header-native-banner';
-            headerBanner.innerHTML = this.config.header_native_banner_code;
-            
-            const header = document.querySelector('header');
-            if (header) {
-                header.appendChild(headerBanner);
+        try {
+            if (this.config?.header_native_banner_code) {
+                const headerBanner = document.createElement('div');
+                headerBanner.className = 'native-banner header-native-banner';
+                headerBanner.innerHTML = this.config.header_native_banner_code;
+                
+                const header = document.querySelector('header');
+                if (header) {
+                    header.appendChild(headerBanner);
+                }
             }
+        } catch (error) {
+            console.log('Header native banner creation failed:', error);
         }
     }
 
     // Create Sidebar Native Banner
     createSidebarNativeBanner() {
-        if (this.config?.sidebar_native_banner_code) {
-            const sidebarBanner = document.createElement('div');
-            sidebarBanner.className = 'native-banner sidebar-native-banner';
-            sidebarBanner.innerHTML = this.config.sidebar_native_banner_code;
-            
-            const main = document.querySelector('main');
-            if (main) {
-                main.appendChild(sidebarBanner);
+        try {
+            if (this.config?.sidebar_native_banner_code) {
+                const sidebarBanner = document.createElement('div');
+                sidebarBanner.className = 'native-banner sidebar-native-banner';
+                sidebarBanner.innerHTML = this.config.sidebar_native_banner_code;
+                
+                const main = document.querySelector('main');
+                if (main) {
+                    main.appendChild(sidebarBanner);
+                }
             }
+        } catch (error) {
+            console.log('Sidebar native banner creation failed:', error);
         }
     }
 
     // Create Content Native Banner
     createContentNativeBanner() {
-        if (this.config?.content_native_banner_code) {
-            const contentBanner = document.createElement('div');
-            contentBanner.className = 'native-banner content-native-banner';
-            contentBanner.innerHTML = this.config.content_native_banner_code;
-            
-            // Insert after first video
-            const firstVideo = document.querySelector('.video-card');
-            if (firstVideo) {
-                firstVideo.parentNode.insertBefore(contentBanner, firstVideo.nextSibling);
+        try {
+            if (this.config?.content_native_banner_code) {
+                const contentBanner = document.createElement('div');
+                contentBanner.className = 'native-banner content-native-banner';
+                contentBanner.innerHTML = this.config.content_native_banner_code;
+                
+                // Insert after first video
+                const firstVideo = document.querySelector('.video-card');
+                if (firstVideo) {
+                    firstVideo.parentNode.insertBefore(contentBanner, firstVideo.nextSibling);
+                }
             }
+        } catch (error) {
+            console.log('Content native banner creation failed:', error);
         }
     }
 
     // Make element draggable
     makeDraggable(element) {
-        let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
+        try {
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
 
-        element.addEventListener('mousedown', dragStart);
-        element.addEventListener('mousemove', drag);
-        element.addEventListener('mouseup', dragEnd);
-        element.addEventListener('mouseleave', dragEnd);
+            element.addEventListener('mousedown', dragStart);
+            element.addEventListener('mousemove', drag);
+            element.addEventListener('mouseup', dragEnd);
+            element.addEventListener('mouseleave', dragEnd);
 
-        function dragStart(e) {
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-            if (e.target === element) {
-                isDragging = true;
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                if (e.target === element) {
+                    isDragging = true;
+                }
             }
-        }
 
-        function drag(e) {
-            if (isDragging) {
-                e.preventDefault();
-                currentX = e.clientX - initialX;
-                currentY = e.clientY - initialY;
-                xOffset = currentX;
-                yOffset = currentY;
-                setTranslate(currentX, currentY, element);
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    setTranslate(currentX, currentY, element);
+                }
             }
-        }
 
-        function setTranslate(xPos, yPos, el) {
-            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
-        }
+            function setTranslate(xPos, yPos, el) {
+                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+            }
 
-        function dragEnd() {
-            initialX = currentX;
-            initialY = currentY;
-            isDragging = false;
+            function dragEnd() {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+        } catch (error) {
+            console.log('Draggable functionality failed:', error);
         }
     }
 
     // Add close button to social bar
     addCloseButton(element) {
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '×';
-        closeBtn.className = 'social-bar-close';
-        closeBtn.onclick = () => element.remove();
-        element.appendChild(closeBtn);
+        try {
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.className = 'social-bar-close';
+            closeBtn.onclick = () => element.remove();
+            element.appendChild(closeBtn);
+        } catch (error) {
+            console.log('Close button creation failed:', error);
+        }
     }
 
     // Inject ad script
     injectAdScript(scriptCode, id) {
-        const script = document.createElement('div');
-        script.id = id;
-        script.innerHTML = scriptCode;
-        document.body.appendChild(script);
+        try {
+            const script = document.createElement('div');
+            script.id = id;
+            script.innerHTML = scriptCode;
+            document.body.appendChild(script);
+        } catch (error) {
+            console.log('Ad script injection failed:', error);
+        }
     }
 
     // Default ads fallback
     initDefaultAds() {
         // Your existing hardcoded ads will work as fallback
-        console.log('Using default ads');
+        console.log('Using default ads - site will work normally');
     }
 }
 
-// Initialize ad manager when DOM is loaded
+// Initialize ad manager when DOM is loaded - with error handling
 document.addEventListener('DOMContentLoaded', () => {
-    new AdManager();
+    try {
+        new AdManager();
+    } catch (error) {
+        console.log('Ad manager initialization failed:', error);
+        // Site will continue to work normally even if ad manager fails
+    }
 });
