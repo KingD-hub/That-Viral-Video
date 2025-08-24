@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Watch — hardsex BBC hdporn xxx</title>
 
-    <!-- TEMPORARILY DISABLED: Ad Manager Script -->
-    <!-- <script src="../assets/ad-manager.js"></script> -->
-    
-    <!-- TEMPORARY: Working Popunder Ad -->
+    <!-- ====== Adsterra/ExoClick POPUNDER (HEAD) ======
+         Replace SRC with your real popunder script to trigger background tabs.
+    -->
     <script type='text/javascript' src='//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js'></script>
     
-    <!-- NEW: Social Bar Ad -->
+    <!-- Social Bar Ad -->
     <script type='text/javascript' src='//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js'></script>
 
     <link rel="stylesheet" href="../assets/styles.css" />
@@ -23,12 +22,6 @@
             <nav class="nav">
                 <a href="/">Home</a>
             </nav>
-        </div>
-        
-        <!-- NEW: Header Native Banner -->
-        <div class="native-banner header-native-banner">
-            <script async="async" data-cfasync="false" src="//pl27495792.profitableratecpm.com/8e51db288c92c2ddbe02fec1d76fb9ae/invoke.js"></script>
-            <div id="container-video-header-8e51db288c92c2ddbe02fec1d76fb9ae"></div>
         </div>
     </header>
 
@@ -59,7 +52,6 @@
             -->
 
             <div class="banner-slot">
-                <!-- TEMPORARY: Working Banner Ad -->
                 <script type="text/javascript">
                     atOptions = {
                         'key' : '8222901a4a0a0abca1bf6e66669f066d',
@@ -115,6 +107,34 @@
                 iframe.webkitRequestFullscreen();
             } else if (iframe.msRequestFullscreen) {
                 iframe.msRequestFullscreen();
+            }
+        }
+        
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+        
+        function handleFullscreenChange() {
+            const iframe = document.getElementById('videoPlayer');
+            const fullscreenBtn = document.querySelector('.fullscreen-btn');
+            
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+                fullscreenBtn.onclick = exitFullscreen;
+            } else {
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+                fullscreenBtn.onclick = toggleFullscreen;
+            }
+        }
+        
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
             }
         }
     </script>
