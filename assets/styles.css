@@ -57,6 +57,24 @@ header p {
     color: #999;
 }
 
+/* Loading and Error States */
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #ff6b6b;
+    background: #ffe6e6;
+    border-radius: 8px;
+    margin: 20px;
+}
+
 /* Pagination */
 .pagination {
     display: flex;
@@ -92,21 +110,6 @@ header p {
 .pagination .disabled {
     opacity: 0.5;
     pointer-events: none;
-}
-
-/* Loading and No Videos States */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #ccc;
-    font-size: 18px;
-}
-
-.no-videos {
-    text-align: center;
-    padding: 40px;
-    color: #ccc;
-    font-size: 18px;
 }
 
 main {

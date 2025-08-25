@@ -31,13 +31,18 @@
 
     <main>
         <div class="video-grid" id="videoGrid">
-            <!-- Videos will be loaded dynamically here -->
+            <!-- Videos will be loaded dynamically from CMS -->
             <div class="loading">Loading videos...</div>
         </div>
 
         <!-- Pagination -->
-        <div class="pagination" id="pagination">
-            <!-- Pagination will be generated dynamically -->
+        <div class="pagination">
+            <span class="current">1</span>
+            <a href="page2.html">2</a>
+            <a href="page3.html">3</a>
+            <a href="page4.html">4</a>
+            <a href="page5.html">5</a>
+            <a href="page2.html">Next →</a>
         </div>
 
         <!-- Banner Ad -->
@@ -56,188 +61,106 @@
   </main>
 
     <footer>
-        <p>&copy; <span id="year"></span> DailyClips. All rights reserved. <a href="legal.html">Legal</a></p>
-    </footer>
+        <p>&copy; 2024 DailyClips. All rights reserved.</p>
+        <a href="legal.html">Legal</a>
+  </footer>
 
-    <script>
-        // Global variables
-        let allVideos = [];
-        let currentPage = 1;
-        const videosPerPage = 5;
-        let filteredVideos = [];
-
-        // Load videos from HTML files
-        async function loadVideos() {
-            try {
-                // Try to load from API first (for dynamic videos)
-                const response = await fetch('/.netlify/functions/videos');
-                const data = await response.json();
-                
-                if (data.videos && data.videos.length > 0) {
-                    allVideos = data.videos;
-                    filteredVideos = [...allVideos];
-                    displayVideos();
-                    setupPagination();
-                    return;
-                }
-                
-                // Fallback to static videos
-                throw new Error('No videos from API');
-                
-            } catch (error) {
-                console.error('Error loading videos from API:', error);
-                // Fallback to static videos
-                allVideos = getStaticVideos();
-                filteredVideos = [...allVideos];
-                displayVideos();
-                setupPagination();
-            }
-        }
-
-        // Fallback static videos (your original videos)
-        function getStaticVideos() {
-            return [
-                {
-                    title: "hardsex BBC hdporn xxx",
-                    description: "Hot BBC action in HD quality. Click to watch now.",
-                    tags: "cheating,wife,moriah mills",
-                    thumbnail: "https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/39/83/47/39834767c87518f4e747459db314f345/39834767c87518f4e747459db314f345.13.jpg",
-                    url: "videos/first-video.html",
-                    page: 1,
-                    position: 1
-                },
-                {
-                    title: "Leak Video Of Miracle From Her University Days",
-                    description: "Spicy leaks that will leave you wanting more.",
-                    tags: "leaks,hardcore,spicy",
-                    thumbnail: "https://drive.google.com/thumbnail?id=1cisRBdBC_jhh-PfENmhGtwAl0KJatDgv",
-                    url: "videos/second-video.html",
-                    page: 1,
-                    position: 2
-                },
-                {
-                    title: "Asian Teen Takes It All",
-                    description: "Young Asian beauty ready for action. Click to watch now.",
-                    tags: "asian,teen,beauty",
-                    thumbnail: "https://pix-cdn77.phncdn.com/c6371/videos/202507/20/16545975/original_16545975.mp4/plain/ex:1:no/bg:0:0:0/rs:fit:320:180/vts:52?hash=Yb2eC-1hq5CrPno08yA5OHauuyc=&validto=4891363200",
-                    url: "videos/third-video.html",
-                    page: 1,
-                    position: 3
-                },
-                {
-                    title: "Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal",
-                    description: "Dick in between ass cheeks. Click to watch now.",
-                    tags: "cheating,wife,moriah mills",
-                    thumbnail: "https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/22/e5/59/22e55995427a107de19f41cffd1ad2b2/22e55995427a107de19f41cffd1ad2b2.9.jpg",
-                    url: "videos/fourth-video.html",
-                    page: 1,
-                    position: 4
-                },
-                {
-                    title: "She let him fuck her ass hole for job",
-                    description: "Job interview takes an unexpected turn.",
-                    tags: "job,interview,ass",
-                    thumbnail: "https://drive.google.com/thumbnail?id=1P69-qsgWKSD173hkuyWjUeh49DOth2ke",
-                    url: "videos/fifth-video.html",
-                    page: 1,
-                    position: 5
-                }
-            ];
-        }
-
-        // Display videos for current page
-        function displayVideos() {
-            const videoGrid = document.getElementById('videoGrid');
-            const startIndex = (currentPage - 1) * videosPerPage;
-            const endIndex = startIndex + videosPerPage;
-            const pageVideos = filteredVideos.slice(startIndex, endIndex);
-
-            if (pageVideos.length === 0) {
-                videoGrid.innerHTML = '<div class="no-videos">No videos found.</div>';
-                return;
-            }
-
-            videoGrid.innerHTML = pageVideos.map(video => `
-                <div class="video-card" data-title="${video.title}" data-description="${video.description}" data-tags="${video.tags}">
-                    <a href="${video.url}">
-                        <div class="thumb-container">
-                            <img src="${video.thumbnail}" alt="${video.title}" onerror="this.src='assets/thumb1.webp'">
-                        </div>
-                        <div class="card-content">
-                            <h2>${video.title}</h2>
-                            <p>${video.description}</p>
-                        </div>
-                    </a>
-                </div>
-            `).join('');
-        }
-
-        // Setup pagination
-        function setupPagination() {
-            const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
-            const pagination = document.getElementById('pagination');
-            
-            if (totalPages <= 1) {
-                pagination.innerHTML = '';
-                return;
-            }
-
-            let paginationHTML = '';
-            
-            // Previous button
-            if (currentPage > 1) {
-                paginationHTML += `<a href="#" onclick="changePage(${currentPage - 1})">← Previous</a>`;
-            }
-            
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === currentPage) {
-                    paginationHTML += `<span class="current">${i}</span>`;
-                } else {
-                    paginationHTML += `<a href="#" onclick="changePage(${i})">${i}</a>`;
-                }
-            }
-            
-            // Next button
-            if (currentPage < totalPages) {
-                paginationHTML += `<a href="#" onclick="changePage(${currentPage + 1})">Next →</a>`;
-            }
-            
-            pagination.innerHTML = paginationHTML;
-        }
-
-        // Change page
-        function changePage(page) {
-            currentPage = page;
-            displayVideos();
-            setupPagination();
-            window.scrollTo(0, 0);
-        }
-
-        // Search videos
+  <script>
+        // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
             
-            if (searchTerm === '') {
-                filteredVideos = [...allVideos];
-            } else {
-                filteredVideos = allVideos.filter(video => 
-                    video.title.toLowerCase().includes(searchTerm) ||
-                    video.description.toLowerCase().includes(searchTerm) ||
-                    video.tags.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            currentPage = 1;
-            displayVideos();
-            setupPagination();
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('year').textContent = new Date().getFullYear();
-            loadVideos();
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
         });
-    </script>
+
+        // Dynamic video loading from manifest
+        async function loadVideosFromCMS() {
+            let videoFiles = [];
+            try {
+                const listRes = await fetch('videos/list.json', { cache: 'no-store' });
+                if (listRes.ok) {
+                    videoFiles = await listRes.json();
+                }
+            } catch (e) {
+                console.warn('videos/list.json not found, using fallback list.');
+            }
+
+            if (!videoFiles || videoFiles.length === 0) {
+                videoFiles = [
+                    'videos/first-video.html',
+                    'videos/second-video.html', 
+                    'videos/third-video.html',
+                    'videos/fourth-video.html',
+                    'videos/fifth-video.html'
+                ];
+            }
+
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = '';
+
+            let loadedCount = 0;
+            for (const videoFile of videoFiles) {
+                try {
+                    const response = await fetch(videoFile, { cache: 'no-store' });
+                    if (response.ok) {
+                        const html = await response.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const title = doc.querySelector('h1')?.textContent || 'Untitled Video';
+                        const description = doc.querySelector('.meta')?.textContent || '';
+                        const iframeSrc = doc.querySelector('iframe')?.src || '';
+
+                        const videoCard = document.createElement('div');
+                        videoCard.className = 'video-card';
+                        videoCard.setAttribute('data-title', title);
+                        videoCard.setAttribute('data-description', description);
+                        videoCard.setAttribute('data-tags', title.toLowerCase());
+                        videoCard.innerHTML = `
+                            <a href="${videoFile}">
+                                <div class="thumb-container">
+                                    <img src="${iframeSrc}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x200/111/fff?text=Video'">
+                                </div>
+                                <div class="card-content">
+                                    <h2>${title}</h2>
+                                    <p>${description}</p>
+                                </div>
+                            </a>
+                        `;
+                        videoGrid.appendChild(videoCard);
+                        loadedCount++;
+                    }
+                } catch (err) {
+                    console.log('Skip invalid video file', videoFile, err);
+                }
+            }
+
+            if (loadedCount === 0) {
+                videoGrid.innerHTML = '<div class="error">No videos found yet. Add one in Admin, then refresh.</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadVideosFromCMS);
+  </script>
 </body>
 </html>
