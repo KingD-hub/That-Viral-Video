@@ -58,8 +58,7 @@ class VideoManager {
         // Regenerate all pages
         await this.regeneratePages();
         
-        // Create individual video page
-        await this.createVideoPage(videoData);
+        // Individual video pages are created in regeneratePages()
     }
 
     async loadAllVideos() {
@@ -119,16 +118,8 @@ class VideoManager {
     }
 
     async regeneratePages() {
-        const totalVideos = this.videosData.length;
-        const totalPages = Math.ceil(totalVideos / this.maxVideosPerPage);
-        
-        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-            const startIndex = (pageNum - 1) * this.maxVideosPerPage;
-            const endIndex = startIndex + this.maxVideosPerPage;
-            const pageVideos = this.videosData.slice(startIndex, endIndex);
-            
-            await this.generatePage(pageNum, pageVideos, totalPages);
-        }
+        // Download all files together
+        await this.downloadAllFiles();
     }
 
     async generatePage(pageNum, videos, totalPages) {
@@ -222,8 +213,8 @@ class VideoManager {
         }
     }
 
-    async createVideoPage(videoData) {
-        const videoFileName = this.generateVideoFileName(videoData.title, 1);
+    async createVideoPage(videoData, globalIndex) {
+        const videoFileName = this.generateVideoFileName(videoData.title, globalIndex);
         
         // Load video template
         const templateResponse = await fetch('../videos/first-video.html');
@@ -234,26 +225,74 @@ class VideoManager {
         
         // Update title
         doc.title = `Watch — ${videoData.title}`;
-        doc.querySelector('h1').textContent = videoData.title;
+        const h1 = doc.querySelector('h1');
+        if (h1) h1.textContent = videoData.title;
         
         // Update video embed
         const playerDiv = doc.querySelector('.responsive-embed');
-        const existingIframe = playerDiv.querySelector('iframe');
-        if (existingIframe) {
-            existingIframe.remove();
+        if (playerDiv) {
+            const existingIframe = playerDiv.querySelector('iframe');
+            if (existingIframe) {
+                existingIframe.remove();
+            }
+            
+            // Keep the fullscreen button
+            const fullscreenBtn = playerDiv.querySelector('.fullscreen-btn');
+            
+            // Add new embed
+            const embedContainer = document.createElement('div');
+            embedContainer.innerHTML = videoData.videoEmbed;
+            const newIframe = embedContainer.querySelector('iframe');
+            if (newIframe) {
+                newIframe.id = 'videoPlayer';
+                // Ensure iframe has proper styling
+                newIframe.style.position = 'absolute';
+                newIframe.style.top = '0';
+                newIframe.style.left = '0';
+                newIframe.style.width = '100%';
+                newIframe.style.height = '100%';
+                playerDiv.appendChild(newIframe);
+            }
         }
         
-        // Add new embed
-        const embedContainer = document.createElement('div');
-        embedContainer.innerHTML = videoData.videoEmbed;
-        const newIframe = embedContainer.querySelector('iframe');
-        if (newIframe) {
-            newIframe.id = 'videoPlayer';
-            playerDiv.appendChild(newIframe);
-        }
+        // Update related videos section with other videos
+        this.updateRelatedVideos(doc, videoData, globalIndex);
         
-        const updatedHtml = doc.documentElement.outerHTML;
-        this.downloadFile(videoFileName, updatedHtml);
+        const updatedHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+        this.downloadFile(`videos/${videoFileName}`, updatedHtml);
+    }
+
+    updateRelatedVideos(doc, currentVideo, currentIndex) {
+        const relatedGrid = doc.querySelector('.related .grid');
+        if (!relatedGrid) return;
+        
+        relatedGrid.innerHTML = '';
+        
+        // Get other videos (excluding current one)
+        const otherVideos = this.videosData.filter((_, index) => index !== currentIndex - 1);
+        
+        // Show up to 2 related videos
+        const relatedVideos = otherVideos.slice(0, 2);
+        
+        relatedVideos.forEach((video, index) => {
+            const relatedIndex = this.videosData.findIndex(v => v === video) + 1;
+            const videoFileName = this.generateVideoFileName(video.title, relatedIndex);
+            
+            const cardDiv = document.createElement('a');
+            cardDiv.className = 'card';
+            cardDiv.href = videoFileName;
+            
+            cardDiv.innerHTML = `
+                <div class="thumb">
+                    <img src="${video.thumbnail}" alt="${video.title}" loading="lazy" />
+                </div>
+                <div class="card-body">
+                    <h3>${video.title}</h3>
+                </div>
+            `;
+            
+            relatedGrid.appendChild(cardDiv);
+        });
     }
 
     generateVideoFileName(title, index) {
@@ -275,6 +314,108 @@ class VideoManager {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        // Show download notification
+        console.log(`Downloaded: ${filename}`);
+    }
+
+    async downloadAllFiles() {
+        // Create a small delay between downloads to avoid browser blocking
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        const totalVideos = this.videosData.length;
+        const totalPages = Math.ceil(totalVideos / this.maxVideosPerPage);
+        
+        // Download all main pages
+        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+            const startIndex = (pageNum - 1) * this.maxVideosPerPage;
+            const endIndex = startIndex + this.maxVideosPerPage;
+            const pageVideos = this.videosData.slice(startIndex, endIndex);
+            
+            const pageHtml = await this.generatePageHTML(pageNum, pageVideos, totalPages);
+            const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
+            this.downloadFile(fileName, pageHtml);
+            
+            await delay(500); // 500ms delay between downloads
+        }
+        
+        // Download all video pages
+        for (let i = 0; i < this.videosData.length; i++) {
+            const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
+            const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
+            this.downloadFile(`videos-${videoFileName}`, videoHtml);
+            
+            await delay(300); // 300ms delay between video downloads
+        }
+    }
+
+    async generatePageHTML(pageNum, videos, totalPages) {
+        const isMainPage = pageNum === 1;
+        
+        // Load template
+        const templateResponse = await fetch('../index.html');
+        const templateHtml = await templateResponse.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(templateHtml, 'text/html');
+        
+        // Clear existing video grid
+        const videoGrid = doc.querySelector('.video-grid');
+        videoGrid.innerHTML = '';
+        
+        // Add videos
+        videos.forEach((video, index) => {
+            const videoCard = this.createVideoCardHTML(video, index + 1 + ((pageNum - 1) * this.maxVideosPerPage));
+            videoGrid.appendChild(videoCard);
+        });
+        
+        // Update pagination
+        this.updatePagination(doc, pageNum, totalPages);
+        
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    }
+
+    async generateVideoPageHTML(videoData, globalIndex) {
+        // Load video template
+        const templateResponse = await fetch('../videos/first-video.html');
+        const templateHtml = await templateResponse.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(templateHtml, 'text/html');
+        
+        // Update title
+        doc.title = `Watch — ${videoData.title}`;
+        const h1 = doc.querySelector('h1');
+        if (h1) h1.textContent = videoData.title;
+        
+        // Update video embed
+        const playerDiv = doc.querySelector('.responsive-embed');
+        if (playerDiv) {
+            const existingIframe = playerDiv.querySelector('iframe');
+            if (existingIframe) {
+                existingIframe.remove();
+            }
+            
+            // Add new embed
+            const embedContainer = document.createElement('div');
+            embedContainer.innerHTML = videoData.videoEmbed;
+            const newIframe = embedContainer.querySelector('iframe');
+            if (newIframe) {
+                newIframe.id = 'videoPlayer';
+                // Ensure iframe has proper styling
+                newIframe.style.position = 'absolute';
+                newIframe.style.top = '0';
+                newIframe.style.left = '0';
+                newIframe.style.width = '100%';
+                newIframe.style.height = '100%';
+                playerDiv.appendChild(newIframe);
+            }
+        }
+        
+        // Update related videos section with other videos
+        this.updateRelatedVideos(doc, videoData, globalIndex);
+        
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     }
 
     showStatus(message, type) {
