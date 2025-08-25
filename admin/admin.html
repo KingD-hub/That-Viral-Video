@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailyClips Admin - Video Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            border: 2px solid #ff6b6b;
+        }
+
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #ccc;
+        }
+
+        .form-container {
+            background: #2c2c2c;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            background: #1a1a1a;
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #ff5252;
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status.success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .video-list {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+
+        .video-list h3 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+
+        .video-item {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+        }
+
+        .video-item h4 {
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .video-item p {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #ff6b6b;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border: 2px solid #ff6b6b;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            color: #ff6b6b;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to Website</a>
+        
+        <div class="header">
+            <h1>🎬 Video Management</h1>
+            <p>Add new videos - they'll automatically appear at the top of your site</p>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div class="form-container">
+            <form id="videoForm">
+                <div class="form-group">
+                    <label for="title">Video Title</label>
+                    <input type="text" id="title" name="title" required>
+                    <div class="hint">Enter the title that will appear on the video card</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" required></textarea>
+                    <div class="hint">Brief description that appears under the title</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <input type="text" id="tags" name="tags" required>
+                    <div class="hint">Comma-separated tags for search (e.g., "teen,hardcore,hd")</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="thumbnail">Thumbnail URL</label>
+                    <input type="url" id="thumbnail" name="thumbnail" required>
+                    <div class="hint">Direct link to the thumbnail image</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="videoEmbed">Video Embed Code</label>
+                    <textarea id="videoEmbed" name="videoEmbed" required></textarea>
+                    <div class="hint">Complete iframe embed code (e.g., &lt;iframe src="..." ...&gt;&lt;/iframe&gt;)</div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">Add Video</button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Processing video addition...</p>
+        </div>
+
+        <div class="video-list" id="videoList">
+            <h3>Current Videos (Newest First)</h3>
+            <div id="videoItems">
+                <!-- Videos will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

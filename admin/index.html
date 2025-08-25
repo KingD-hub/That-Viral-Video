@@ -1,68 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DailyClips Admin</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .admin-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .admin-header h1 {
-            color: #ff6b6b;
-            margin-bottom: 10px;
-        }
-        .admin-header p {
-            color: #666;
-        }
-        .identity-widget {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .cms-container {
-            margin-top: 30px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>DailyClips Admin</title>
+  <script>
+    // Redirect to new admin interface
+    window.location.href = 'admin.html';
+  </script>
 </head>
 <body>
-    <div class="admin-header">
-        <h1>🔧 DailyClips Admin Panel</h1>
-        <p>Content Management System</p>
-    </div>
-
-    <!-- Netlify Identity Widget -->
-    <div class="identity-widget">
-        <div id="netlify-identity-widget"></div>
-    </div>
-
-    <!-- Netlify CMS -->
-    <div class="cms-container">
-        <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-    </div>
-
-    <script>
-        // Initialize Netlify Identity Widget
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
+  <p>Redirecting to admin panel...</p>
+  <p>If not redirected, <a href="admin.html">click here</a></p>
 </body>
 </html>

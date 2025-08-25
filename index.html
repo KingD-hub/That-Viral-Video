@@ -11,9 +11,6 @@
     
     <!-- Popunder Ad -->
     <script type='text/javascript' src='//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js'></script>
-    
-    <!-- Social Bar Ad -->
-    <script type='text/javascript' src='//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js'></script>
 </head>
 <body>
     <header>
@@ -31,8 +28,70 @@
 
     <main>
         <div class="video-grid" id="videoGrid">
-            <!-- Videos will be loaded dynamically from CMS -->
-            <div class="loading">Loading videos...</div>
+            <!-- Video 1 -->
+            <div class="video-card" data-title="hardsex BBC hdporn xxx" data-description="Hot BBC action in HD quality. Click to watch now." data-tags="cheating,wife,moriah mills">
+                <a href="videos/first-video.html">
+                    <div class="thumb-container">
+                        <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/39/83/47/39834767c87518f4e747459db314f345/39834767c87518f4e747459db314f345.13.jpg" alt="hardsex BBC hdporn xxx">
+                    </div>
+                    <div class="card-content">
+                        <h2>hardsex BBC hdporn xxx</h2>
+                        <p>Hot BBC action in HD quality. Click to watch now.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Video 2 -->
+            <div class="video-card" data-title="Leak Video Of Miracle From Her University Days" data-description="Spicy leaks that will leave you wanting more." data-tags="leaks,hardcore,spicy">
+                <a href="videos/second-video.html">
+                    <div class="thumb-container">
+                        <img src="https://drive.google.com/thumbnail?id=1cisRBdBC_jhh-PfENmhGtwAl0KJatDgv" alt="Leak Video Of Miracle From Her University Days">
+                    </div>
+                    <div class="card-content">
+                        <h2>Leak Video Of Miracle From Her University Days</h2>
+                        <p>Spicy leaks that will leave you wanting more.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Video 3 -->
+            <div class="video-card" data-title="Asian Teen Takes It All" data-description="Young Asian beauty ready for action. Click to watch now." data-tags="asian,teen,beauty">
+                <a href="videos/third-video.html">
+                    <div class="thumb-container">
+                        <img src="https://pix-cdn77.phncdn.com/c6371/videos/202507/20/16545975/original_16545975.mp4/plain/ex:1:no/bg:0:0:0/rs:fit:320:180/vts:52?hash=Yb2eC-1hq5CrPno08yA5OHauuyc=&validto=4891363200" alt="Asian Teen Takes It All">
+                    </div>
+                    <div class="card-content">
+                        <h2>Asian Teen Takes It All</h2>
+                        <p>Young Asian beauty ready for action. Click to watch now.</p>
+                    </div>
+                </a>
+            </div>
+
+                        <!-- Video 4 -->
+            <div class="video-card" data-title="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal" data-description="Dick in between ass cheeks. Click to watch now." data-tags="cheating,wife,moriah mills">
+                <a href="videos/fourth-video.html">
+                    <div class="thumb-container">
+                        <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/22/e5/59/22e55995427a107de19f41cffd1ad2b2/22e55995427a107de19f41cffd1ad2b2.9.jpg" alt="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal">
+        </div>
+                    <div class="card-content">
+                        <h2>Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal</h2>
+                        <p>Dick in between ass cheeks. Click to watch now.</p>
+        </div>
+      </a>
+            </div>
+
+            <!-- Video 5 -->
+            <div class="video-card" data-title="She let him fuck her ass hole for job" data-description="Job interview takes an unexpected turn." data-tags="job,interview,ass">
+                <a href="videos/fifth-video.html">
+                    <div class="thumb-container">
+                        <img src="https://drive.google.com/thumbnail?id=1P69-qsgWKSD173hkuyWjUeh49DOth2ke" alt="She let him fuck her ass hole for job">
+                    </div>
+                    <div class="card-content">
+                        <h2>She let him fuck her ass hole for job</h2>
+                        <p>Job interview takes an unexpected turn.</p>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- Pagination -->
@@ -93,79 +152,6 @@
                 });
             }
         });
-
-        // Dynamic video loading from manifest
-        async function loadVideosFromCMS() {
-            let videoFiles = [];
-            try {
-                const listRes = await fetch('videos/list.json', { cache: 'no-store' });
-                if (listRes.ok) {
-                    const data = await listRes.json();
-                    if (Array.isArray(data)) {
-                        videoFiles = data;
-                    } else if (data && Array.isArray(data.videos)) {
-                        videoFiles = data.videos.map(item => typeof item === 'string' ? item : item.path).filter(Boolean);
-                    }
-                }
-            } catch (e) {
-                console.warn('videos/list.json not found, using fallback list.');
-            }
-
-            if (!videoFiles || videoFiles.length === 0) {
-                videoFiles = [
-                    'videos/first-video.html',
-                    'videos/second-video.html', 
-                    'videos/third-video.html',
-                    'videos/fourth-video.html',
-                    'videos/fifth-video.html'
-                ];
-            }
-
-            const videoGrid = document.getElementById('videoGrid');
-            videoGrid.innerHTML = '';
-
-            let loadedCount = 0;
-            for (const videoFile of videoFiles) {
-                try {
-                    const response = await fetch(videoFile, { cache: 'no-store' });
-                    if (response.ok) {
-                        const html = await response.text();
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const title = doc.querySelector('h1')?.textContent || 'Untitled Video';
-                        const description = doc.querySelector('.meta')?.textContent || '';
-                        const iframeSrc = doc.querySelector('iframe')?.src || '';
-
-                        const videoCard = document.createElement('div');
-                        videoCard.className = 'video-card';
-                        videoCard.setAttribute('data-title', title);
-                        videoCard.setAttribute('data-description', description);
-                        videoCard.setAttribute('data-tags', title.toLowerCase());
-                        videoCard.innerHTML = `
-                            <a href="${videoFile}">
-                                <div class="thumb-container">
-                                    <img src="${iframeSrc}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x200/111/fff?text=Video'">
-                                </div>
-                                <div class="card-content">
-                                    <h2>${title}</h2>
-                                    <p>${description}</p>
-                                </div>
-                            </a>
-                        `;
-                        videoGrid.appendChild(videoCard);
-                        loadedCount++;
-                    }
-                } catch (err) {
-                    console.log('Skip invalid video file', videoFile, err);
-                }
-            }
-
-            if (loadedCount === 0) {
-                videoGrid.innerHTML = '<div class="error">No videos found yet. Add one in Admin (Manifests → Video List), then refresh.</div>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadVideosFromCMS);
   </script>
 </body>
 </html>
