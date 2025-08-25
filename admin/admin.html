@@ -225,6 +225,7 @@
                 </div>
 
                 <button type="submit" class="btn" id="submitBtn">Add Video</button>
+                <button type="button" class="btn" id="regenerateBtn" style="background: #ff9800; margin-left: 10px;">Regenerate All Videos</button>
             </form>
         </div>
 
@@ -234,6 +235,15 @@
 
         <div class="video-list" id="videoList">
             <h3>Current Videos (Newest First)</h3>
+            <div style="background: #333; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <h4 style="color: #4CAF50; margin-bottom: 10px;">📦 Automatic ZIP Download</h4>
+                <p style="color: #ccc; font-size: 14px; line-height: 1.4;">
+                    <strong>One ZIP file contains everything organized:</strong><br>
+                    📁 <strong>root/</strong> folder → Upload contents to your site's root<br>
+                    📁 <strong>videos/</strong> folder → Upload contents to your /videos/ folder<br>
+                    <strong>Smart pagination:</strong> Only generates pages when needed (no empty pages)
+                </p>
+            </div>
             <div id="videoItems">
                 <!-- Videos will be loaded here -->
             </div>

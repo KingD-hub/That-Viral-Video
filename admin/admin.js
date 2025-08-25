@@ -2,6 +2,7 @@ class VideoManager {
     constructor() {
         this.videosData = [];
         this.maxVideosPerPage = 5;
+        this.videoStorage = new Map(); // Store video data with embed codes
         this.init();
     }
 
@@ -13,6 +14,27 @@ class VideoManager {
     setupEventListeners() {
         const form = document.getElementById('videoForm');
         form.addEventListener('submit', (e) => this.handleSubmit(e));
+        
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        regenerateBtn.addEventListener('click', () => this.handleRegenerate());
+    }
+
+    async handleRegenerate() {
+        const regenerateBtn = document.getElementById('regenerateBtn');
+        const loading = document.getElementById('loading');
+        
+        regenerateBtn.disabled = true;
+        loading.style.display = 'block';
+        
+        try {
+            await this.forceRegenerateAllVideos();
+            this.showStatus('All videos regenerated with unique content! Download all files and upload them.', 'success');
+        } catch (error) {
+            this.showStatus('Error regenerating videos: ' + error.message, 'error');
+        } finally {
+            regenerateBtn.disabled = false;
+            loading.style.display = 'none';
+        }
     }
 
     async handleSubmit(e) {
@@ -49,16 +71,29 @@ class VideoManager {
     }
 
     async addNewVideo(videoData) {
+        // Store the new video with its embed code
+        const videoId = this.generateVideoId(videoData.title);
+        this.videoStorage.set(videoId, videoData);
+        
         // Load current videos from all pages
         await this.loadAllVideos();
         
-        // Add new video to the beginning
-        this.videosData.unshift(videoData);
+        // Add new video to the beginning with stored embed
+        this.videosData.unshift({
+            ...videoData,
+            videoId: videoId,
+            videoEmbed: videoData.videoEmbed // Ensure embed is preserved
+        });
         
-        // Regenerate all pages
+        // Regenerate all pages with complete data
         await this.regeneratePages();
-        
-        // Individual video pages are created in regeneratePages()
+    }
+
+    generateVideoId(title) {
+        return title.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 30) + '-' + Date.now();
     }
 
     async loadAllVideos() {
@@ -100,6 +135,10 @@ class VideoManager {
                 
                 if (link && title) {
                     const videoUrl = link.href.split('/').pop();
+                    const videoId = this.generateVideoId(title.textContent.trim());
+                    
+                    // Check if we have stored embed data for this video
+                    const storedVideo = this.videoStorage.get(videoId);
                     
                     videos.push({
                         title: title.textContent.trim(),
@@ -107,15 +146,18 @@ class VideoManager {
                         tags: card.getAttribute('data-tags') || '',
                         thumbnail: img ? img.src : '',
                         videoUrl: videoUrl,
-                        videoEmbed: '', // Will be loaded from individual video page
+                        videoId: videoId,
+                        videoEmbed: storedVideo ? storedVideo.videoEmbed : '', // Use stored embed or empty
                         timestamp: new Date().toISOString()
                     });
                 }
             });
             
-            // Load embed codes from individual video pages
+            // For videos without stored embeds, try to extract from existing pages
             for (let video of videos) {
-                video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                if (!video.videoEmbed) {
+                    video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                }
             }
             
             return videos;
@@ -332,8 +374,39 @@ class VideoManager {
         return `${slug}.html`;
     }
 
-    downloadFile(filename, content) {
-        const blob = new Blob([content], { type: 'text/html' });
+    // Force regeneration of ALL videos with their stored embed codes
+    async forceRegenerateAllVideos() {
+        console.log('Force regenerating all videos with unique embeds...');
+        
+        // Clear existing data
+        this.videosData = [];
+        
+        // Get all stored videos with their embed codes
+        const storedVideos = Array.from(this.videoStorage.values());
+        
+        if (storedVideos.length === 0) {
+            console.log('No stored videos found, loading from pages...');
+            await this.loadAllVideos();
+        } else {
+            console.log(`Found ${storedVideos.length} stored videos with embeds`);
+            this.videosData = storedVideos;
+        }
+        
+        // Ensure each video has unique embed
+        this.videosData.forEach((video, index) => {
+            if (!video.videoEmbed || video.videoEmbed.trim() === '') {
+                console.warn(`Video ${video.title} missing embed code`);
+            } else {
+                console.log(`Video ${video.title} has embed: ${video.videoEmbed.substring(0, 50)}...`);
+            }
+        });
+        
+        // Download all files with unique content
+        await this.downloadAllFiles();
+    }
+
+    downloadFile(filename, content, mimeType = 'text/html') {
+        const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -349,33 +422,50 @@ class VideoManager {
     }
 
     async downloadAllFiles() {
-        // Create a small delay between downloads to avoid browser blocking
-        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const JSZip = window.JSZip || await this.loadJSZip();
+        const zip = new JSZip();
         
-        const totalVideos = this.videosData.length;
-        const totalPages = Math.ceil(totalVideos / this.maxVideosPerPage);
+        // Create folders
+        const rootFolder = zip.folder("root");
+        const videosFolder = zip.folder("videos");
         
-        // Download all main pages
+        // Calculate total pages needed (only pages with content)
+        const totalPages = Math.ceil(this.videosData.length / this.maxVideosPerPage);
+        
+        // Generate main pages (only needed pages)
         for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
             const startIndex = (pageNum - 1) * this.maxVideosPerPage;
             const endIndex = startIndex + this.maxVideosPerPage;
             const pageVideos = this.videosData.slice(startIndex, endIndex);
             
-            const pageHtml = await this.generatePageHTML(pageNum, pageVideos, totalPages);
-            const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
-            this.downloadFile(fileName, pageHtml);
-            
-            await delay(500); // 500ms delay between downloads
+            // Only generate page if it has videos
+            if (pageVideos.length > 0) {
+                const pageHtml = await this.generatePageHTML(pageNum, pageVideos, totalPages);
+                const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
+                rootFolder.file(fileName, pageHtml);
+            }
         }
         
-        // Download all video pages
+        // Generate all video pages
         for (let i = 0; i < this.videosData.length; i++) {
             const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
             const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
-            this.downloadFile(`videos-${videoFileName}`, videoHtml);
-            
-            await delay(300); // 300ms delay between video downloads
+            videosFolder.file(videoFileName, videoHtml);
         }
+        
+        // Generate and download ZIP
+        const content = await zip.generateAsync({type: "blob"});
+        this.downloadFile("site-files.zip", content, "application/zip");
+    }
+
+    async loadJSZip() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            script.onload = () => resolve(window.JSZip);
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 
     async generatePageHTML(pageNum, videos, totalPages) {
@@ -417,46 +507,62 @@ class VideoManager {
         const h1 = doc.querySelector('h1');
         if (h1) h1.textContent = videoData.title;
         
-        // Update video embed
+        // Update video embed - CRITICAL: Use the specific embed for this video
         const playerDiv = doc.querySelector('.responsive-embed');
-        if (playerDiv && videoData.videoEmbed) {
-            // Remove existing iframe but keep fullscreen button
-            const existingIframe = playerDiv.querySelector('iframe');
-            if (existingIframe) {
-                existingIframe.remove();
+        if (playerDiv) {
+            // Clear all existing content except fullscreen button
+            const fullscreenBtn = playerDiv.querySelector('.fullscreen-btn');
+            playerDiv.innerHTML = '';
+            if (fullscreenBtn) {
+                playerDiv.appendChild(fullscreenBtn);
             }
             
-            // Parse and insert the new embed code
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = videoData.videoEmbed.trim();
-            const newIframe = tempDiv.querySelector('iframe');
-            
-            if (newIframe) {
-                // Set proper attributes for responsive embed
-                newIframe.id = 'videoPlayer';
-                newIframe.setAttribute('frameborder', '0');
-                newIframe.setAttribute('allowfullscreen', 'allowfullscreen');
-                newIframe.setAttribute('scrolling', 'no');
+            // Insert the specific embed code for this video
+            if (videoData.videoEmbed && videoData.videoEmbed.trim()) {
+                console.log(`Inserting embed for ${videoData.title}:`, videoData.videoEmbed.substring(0, 100));
                 
-                // Apply responsive styling
-                newIframe.style.position = 'absolute';
-                newIframe.style.top = '0';
-                newIframe.style.left = '0';
-                newIframe.style.width = '100%';
-                newIframe.style.height = '100%';
-                newIframe.style.border = 'none';
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = videoData.videoEmbed.trim();
+                const newIframe = tempDiv.querySelector('iframe');
                 
-                playerDiv.appendChild(newIframe);
+                if (newIframe) {
+                    // Set proper attributes for responsive embed
+                    newIframe.id = 'videoPlayer';
+                    newIframe.setAttribute('frameborder', '0');
+                    newIframe.setAttribute('allowfullscreen', 'allowfullscreen');
+                    newIframe.setAttribute('scrolling', 'no');
+                    
+                    // Apply responsive styling
+                    newIframe.style.position = 'absolute';
+                    newIframe.style.top = '0';
+                    newIframe.style.left = '0';
+                    newIframe.style.width = '100%';
+                    newIframe.style.height = '100%';
+                    newIframe.style.border = 'none';
+                    
+                    playerDiv.appendChild(newIframe);
+                } else {
+                    // If no iframe found, insert the embed code directly
+                    const embedDiv = document.createElement('div');
+                    embedDiv.innerHTML = videoData.videoEmbed;
+                    embedDiv.style.position = 'absolute';
+                    embedDiv.style.top = '0';
+                    embedDiv.style.left = '0';
+                    embedDiv.style.width = '100%';
+                    embedDiv.style.height = '100%';
+                    playerDiv.appendChild(embedDiv);
+                }
             } else {
-                // If no iframe found, insert the embed code directly
-                const embedDiv = document.createElement('div');
-                embedDiv.innerHTML = videoData.videoEmbed;
-                embedDiv.style.position = 'absolute';
-                embedDiv.style.top = '0';
-                embedDiv.style.left = '0';
-                embedDiv.style.width = '100%';
-                embedDiv.style.height = '100%';
-                playerDiv.appendChild(embedDiv);
+                console.warn(`No embed code found for ${videoData.title}`);
+                // Add placeholder
+                const placeholder = document.createElement('div');
+                placeholder.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Video embed not available</p>';
+                placeholder.style.position = 'absolute';
+                placeholder.style.top = '0';
+                placeholder.style.left = '0';
+                placeholder.style.width = '100%';
+                placeholder.style.height = '100%';
+                playerDiv.appendChild(placeholder);
             }
         }
         
