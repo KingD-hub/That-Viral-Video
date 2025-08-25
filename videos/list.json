@@ -1,9 +1,11 @@
-[
-  "videos/first-video.html",
-  "videos/second-video.html",
-  "videos/third-video.html",
-  "videos/fourth-video.html",
-  "videos/fifth-video.html",
-  "videos/relax-unwind-soulful-rb-chill-vibes-for-your-soul.html",
-  "videos/good.html"
-]
+{
+  "videos": [
+    { "path": "videos/first-video.html" },
+    { "path": "videos/second-video.html" },
+    { "path": "videos/third-video.html" },
+    { "path": "videos/fourth-video.html" },
+    { "path": "videos/fifth-video.html" },
+    { "path": "videos/relax-unwind-soulful-rb-chill-vibes-for-your-soul.html" },
+    { "path": "videos/good.html" }
+  ]
+}

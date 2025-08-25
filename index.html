@@ -100,7 +100,12 @@
             try {
                 const listRes = await fetch('videos/list.json', { cache: 'no-store' });
                 if (listRes.ok) {
-                    videoFiles = await listRes.json();
+                    const data = await listRes.json();
+                    if (Array.isArray(data)) {
+                        videoFiles = data;
+                    } else if (data && Array.isArray(data.videos)) {
+                        videoFiles = data.videos.map(item => typeof item === 'string' ? item : item.path).filter(Boolean);
+                    }
                 }
             } catch (e) {
                 console.warn('videos/list.json not found, using fallback list.');
@@ -156,7 +161,7 @@
             }
 
             if (loadedCount === 0) {
-                videoGrid.innerHTML = '<div class="error">No videos found yet. Add one in Admin, then refresh.</div>';
+                videoGrid.innerHTML = '<div class="error">No videos found yet. Add one in Admin (Manifests → Video List), then refresh.</div>';
             }
         }
 

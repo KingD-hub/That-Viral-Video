@@ -40,3 +40,17 @@ collections:
           - {label: "Videos Per Page", name: "videos_per_page", widget: "number", default: 5}
           - {label: "Enable Search", name: "enable_search", widget: "boolean", default: true}
           - {label: "Enable Pagination", name: "enable_pagination", widget: "boolean", default: true}
+  - name: "manifests"
+    label: "Manifests"
+    files:
+      - file: "videos/list.json"
+        label: "Video List Manifest"
+        name: "video_list"
+        editor:
+          preview: false
+        fields:
+          - label: "Videos"
+            name: "videos"
+            widget: "list"
+            summary: "{{fields.path}}"
+            field: { label: "Path", name: "path", widget: "string", hint: "Path to video HTML, e.g. videos/my-video.html" }
