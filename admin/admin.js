@@ -99,21 +99,50 @@ class VideoManager {
                 const description = card.querySelector('p');
                 
                 if (link && title) {
+                    const videoUrl = link.href.split('/').pop();
+                    
                     videos.push({
                         title: title.textContent.trim(),
                         description: description ? description.textContent.trim() : '',
                         tags: card.getAttribute('data-tags') || '',
                         thumbnail: img ? img.src : '',
-                        videoUrl: link.href.split('/').pop(),
-                        timestamp: new Date().toISOString() // Fallback timestamp
+                        videoUrl: videoUrl,
+                        videoEmbed: '', // Will be loaded from individual video page
+                        timestamp: new Date().toISOString()
                     });
                 }
             });
+            
+            // Load embed codes from individual video pages
+            for (let video of videos) {
+                video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+            }
             
             return videos;
         } catch (error) {
             console.error('Error extracting videos from', pagePath, error);
             return [];
+        }
+    }
+
+    async extractEmbedFromVideoPage(videoUrl) {
+        try {
+            const response = await fetch(`../videos/${videoUrl}`);
+            if (!response.ok) return '';
+            
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const iframe = doc.querySelector('.responsive-embed iframe');
+            if (iframe) {
+                return iframe.outerHTML;
+            }
+            
+            return '';
+        } catch (error) {
+            console.error('Error extracting embed from', videoUrl, error);
+            return '';
         }
     }
 
@@ -390,25 +419,44 @@ class VideoManager {
         
         // Update video embed
         const playerDiv = doc.querySelector('.responsive-embed');
-        if (playerDiv) {
+        if (playerDiv && videoData.videoEmbed) {
+            // Remove existing iframe but keep fullscreen button
             const existingIframe = playerDiv.querySelector('iframe');
             if (existingIframe) {
                 existingIframe.remove();
             }
             
-            // Add new embed
-            const embedContainer = document.createElement('div');
-            embedContainer.innerHTML = videoData.videoEmbed;
-            const newIframe = embedContainer.querySelector('iframe');
+            // Parse and insert the new embed code
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = videoData.videoEmbed.trim();
+            const newIframe = tempDiv.querySelector('iframe');
+            
             if (newIframe) {
+                // Set proper attributes for responsive embed
                 newIframe.id = 'videoPlayer';
-                // Ensure iframe has proper styling
+                newIframe.setAttribute('frameborder', '0');
+                newIframe.setAttribute('allowfullscreen', 'allowfullscreen');
+                newIframe.setAttribute('scrolling', 'no');
+                
+                // Apply responsive styling
                 newIframe.style.position = 'absolute';
                 newIframe.style.top = '0';
                 newIframe.style.left = '0';
                 newIframe.style.width = '100%';
                 newIframe.style.height = '100%';
+                newIframe.style.border = 'none';
+                
                 playerDiv.appendChild(newIframe);
+            } else {
+                // If no iframe found, insert the embed code directly
+                const embedDiv = document.createElement('div');
+                embedDiv.innerHTML = videoData.videoEmbed;
+                embedDiv.style.position = 'absolute';
+                embedDiv.style.top = '0';
+                embedDiv.style.left = '0';
+                embedDiv.style.width = '100%';
+                embedDiv.style.height = '100%';
+                playerDiv.appendChild(embedDiv);
             }
         }
         
