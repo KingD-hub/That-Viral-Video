@@ -593,62 +593,67 @@ class VideoManager {
 
     async downloadAllFiles() {
         try {
-            console.log('🚀 Starting ZIP generation...');
+            console.log('🚀 Starting file downloads...');
             
-            // Load JSZip library
-            let JSZip = window.JSZip;
-            if (!JSZip) {
-                console.log('Loading JSZip library...');
-                JSZip = await this.loadJSZip();
-            }
-            
-            const zip = new JSZip();
-            
-            // Create folders
-            const rootFolder = zip.folder("root");
-            const videosFolder = zip.folder("videos");
-            
-            // Calculate actual pages needed based on video count
-            const actualPagesNeeded = Math.ceil(this.videosData.length / this.maxVideosPerPage);
-            
-            console.log(`📊 Total videos: ${this.videosData.length}, Pages needed: ${actualPagesNeeded}`);
-            
-            // Generate only the pages that have content
-            for (let pageNum = 1; pageNum <= actualPagesNeeded; pageNum++) {
-                const startIndex = (pageNum - 1) * this.maxVideosPerPage;
-                const endIndex = startIndex + this.maxVideosPerPage;
-                const pageVideos = this.videosData.slice(startIndex, endIndex);
-                
-                if (pageVideos.length > 0) {
-                    console.log(`📄 Generating page ${pageNum} with ${pageVideos.length} videos`);
-                    const pageHtml = await this.generatePageHTML(pageNum, pageVideos, actualPagesNeeded);
-                    const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
-                    rootFolder.file(fileName, pageHtml);
-                    console.log(`✅ Added ${fileName} to ZIP`);
-                } else {
-                    console.log(`⏭️ Skipping page ${pageNum} - no videos`);
+            // Try ZIP first, fallback to individual files
+            try {
+                // Load JSZip library
+                let JSZip = window.JSZip;
+                if (!JSZip) {
+                    console.log('Loading JSZip library...');
+                    JSZip = await this.loadJSZip();
                 }
+                
+                const zip = new JSZip();
+                
+                // Create folders
+                const rootFolder = zip.folder("root");
+                const videosFolder = zip.folder("videos");
+                
+                // Calculate actual pages needed based on video count
+                const actualPagesNeeded = Math.ceil(this.videosData.length / this.maxVideosPerPage);
+                
+                console.log(`📊 Total videos: ${this.videosData.length}, Pages needed: ${actualPagesNeeded}`);
+                
+                // Generate only the pages that have content
+                for (let pageNum = 1; pageNum <= actualPagesNeeded; pageNum++) {
+                    const startIndex = (pageNum - 1) * this.maxVideosPerPage;
+                    const endIndex = startIndex + this.maxVideosPerPage;
+                    const pageVideos = this.videosData.slice(startIndex, endIndex);
+                    
+                    if (pageVideos.length > 0) {
+                        console.log(`📄 Generating page ${pageNum} with ${pageVideos.length} videos`);
+                        const pageHtml = await this.generatePageHTML(pageNum, pageVideos, actualPagesNeeded);
+                        const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
+                        rootFolder.file(fileName, pageHtml);
+                        console.log(`✅ Added ${fileName} to ZIP`);
+                    }
+                }
+                
+                // Generate all video pages
+                console.log(`🎬 Generating ${this.videosData.length} video pages...`);
+                for (let i = 0; i < this.videosData.length; i++) {
+                    const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
+                    const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
+                    videosFolder.file(videoFileName, videoHtml);
+                    console.log(`✅ Added video page: ${videoFileName}`);
+                }
+                
+                // Generate and download ZIP
+                console.log('📦 Creating ZIP file...');
+                const content = await zip.generateAsync({type: "blob"});
+                console.log('💾 Downloading ZIP file...');
+                this.downloadFile("site-files.zip", content, "application/zip");
+                console.log('🎉 ZIP download initiated!');
+                
+            } catch (zipError) {
+                console.warn('⚠️ ZIP generation failed, falling back to individual downloads:', zipError);
+                await this.downloadIndividualFiles();
             }
-            
-            // Generate all video pages
-            console.log(`🎬 Generating ${this.videosData.length} video pages...`);
-            for (let i = 0; i < this.videosData.length; i++) {
-                const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
-                const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
-                videosFolder.file(videoFileName, videoHtml);
-                console.log(`✅ Added video page: ${videoFileName}`);
-            }
-            
-            // Generate and download ZIP
-            console.log('📦 Creating ZIP file...');
-            const content = await zip.generateAsync({type: "blob"});
-            console.log('💾 Downloading ZIP file...');
-            this.downloadFile("site-files.zip", content, "application/zip");
-            console.log('🎉 ZIP download initiated!');
             
         } catch (error) {
-            console.error('❌ Error generating ZIP:', error);
-            this.showStatus('Error generating ZIP file: ' + error.message, 'error');
+            console.error('❌ Error downloading files:', error);
+            this.showStatus('Error downloading files: ' + error.message, 'error');
         }
     }
 
@@ -656,10 +661,52 @@ class VideoManager {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            script.onload = () => resolve(window.JSZip);
-            script.onerror = reject;
+            script.onload = () => {
+                console.log('✅ JSZip library loaded successfully');
+                resolve(window.JSZip);
+            };
+            script.onerror = (error) => {
+                console.error('❌ Failed to load JSZip library:', error);
+                reject(error);
+            };
             document.head.appendChild(script);
         });
+    }
+
+    // Simple individual file download (fallback)
+    async downloadIndividualFiles() {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        // Calculate actual pages needed based on video count
+        const actualPagesNeeded = Math.ceil(this.videosData.length / this.maxVideosPerPage);
+        
+        console.log(`📊 Downloading ${actualPagesNeeded} pages and ${this.videosData.length} video files individually...`);
+        
+        // Download main pages
+        for (let pageNum = 1; pageNum <= actualPagesNeeded; pageNum++) {
+            const startIndex = (pageNum - 1) * this.maxVideosPerPage;
+            const endIndex = startIndex + this.maxVideosPerPage;
+            const pageVideos = this.videosData.slice(startIndex, endIndex);
+            
+            if (pageVideos.length > 0) {
+                const pageHtml = await this.generatePageHTML(pageNum, pageVideos, actualPagesNeeded);
+                const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
+                this.downloadFile(fileName, pageHtml);
+                console.log(`✅ Downloaded: ${fileName}`);
+                await delay(500); // 500ms delay between downloads
+            }
+        }
+        
+        // Download all video pages
+        for (let i = 0; i < this.videosData.length; i++) {
+            const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
+            const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
+            this.downloadFile(videoFileName, videoHtml);
+            console.log(`✅ Downloaded video: ${videoFileName}`);
+            await delay(300); // 300ms delay between video downloads
+        }
+        
+        console.log('🎉 All files downloaded individually!');
     }
 
     async generatePageHTML(pageNum, videos, totalPages) {
