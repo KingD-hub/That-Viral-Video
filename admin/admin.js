@@ -75,8 +75,21 @@ class VideoManager {
         const videoId = this.generateVideoId(videoData.title);
         this.videoStorage.set(videoId, videoData);
         
-        // Load current videos from all pages
+        // Load current videos from all pages AND extract their embeds
         await this.loadAllVideos();
+        
+        // Ensure ALL existing videos have their embeds stored
+        console.log('Ensuring all existing videos have embeds stored...');
+        for (let video of this.videosData) {
+            if (!video.videoEmbed || video.videoEmbed.trim() === '') {
+                console.log(`Re-extracting embed for existing video: ${video.title}`);
+                video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                if (video.videoEmbed) {
+                    this.videoStorage.set(video.videoId, video);
+                    console.log(`✅ Re-stored embed for ${video.title}`);
+                }
+            }
+        }
         
         // Add new video to the beginning with stored embed
         this.videosData.unshift({
@@ -156,7 +169,16 @@ class VideoManager {
             // For videos without stored embeds, try to extract from existing pages
             for (let video of videos) {
                 if (!video.videoEmbed) {
+                    console.log(`Extracting embed for ${video.title} from ${video.videoUrl}...`);
                     video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                    
+                    // Store the extracted embed immediately
+                    if (video.videoEmbed) {
+                        this.videoStorage.set(video.videoId, video);
+                        console.log(`✅ Stored embed for ${video.title}`);
+                    } else {
+                        console.warn(`❌ No embed found for ${video.title}`);
+                    }
                 }
             }
             
