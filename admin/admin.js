@@ -176,14 +176,37 @@ class VideoManager {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            const iframe = doc.querySelector('.responsive-embed iframe');
-            if (iframe) {
-                return iframe.outerHTML;
+            // Try to find iframe in responsive-embed container
+            let iframe = doc.querySelector('.responsive-embed iframe');
+            
+            // If no iframe found, try to find any embed content in the container
+            if (!iframe) {
+                const embedContainer = doc.querySelector('.responsive-embed');
+                if (embedContainer) {
+                    // Look for any iframe in the container
+                    iframe = embedContainer.querySelector('iframe');
+                    
+                    // If still no iframe, get all content except fullscreen button
+                    if (!iframe) {
+                        const fullscreenBtn = embedContainer.querySelector('.fullscreen-btn');
+                        const clonedContainer = embedContainer.cloneNode(true);
+                        const clonedFullscreenBtn = clonedContainer.querySelector('.fullscreen-btn');
+                        if (clonedFullscreenBtn) {
+                            clonedFullscreenBtn.remove();
+                        }
+                        
+                        // Return the remaining content if it exists
+                        const content = clonedContainer.innerHTML.trim();
+                        if (content && content !== '') {
+                            return content;
+                        }
+                    }
+                }
             }
             
-            return '';
+            return iframe ? iframe.outerHTML : '';
         } catch (error) {
-            console.error('Error extracting embed from', videoUrl, error);
+            console.error('Error extracting embed from video page:', error);
             return '';
         }
     }
@@ -381,25 +404,24 @@ class VideoManager {
         // Clear existing data
         this.videosData = [];
         
-        // Get all stored videos with their embed codes
-        const storedVideos = Array.from(this.videoStorage.values());
+        // Load all videos from pages (this will extract embeds from existing pages)
+        await this.loadAllVideos();
         
-        if (storedVideos.length === 0) {
-            console.log('No stored videos found, loading from pages...');
-            await this.loadAllVideos();
-        } else {
-            console.log(`Found ${storedVideos.length} stored videos with embeds`);
-            this.videosData = storedVideos;
-        }
-        
-        // Ensure each video has unique embed
-        this.videosData.forEach((video, index) => {
+        // For videos without embeds, try to extract from their pages
+        for (let video of this.videosData) {
             if (!video.videoEmbed || video.videoEmbed.trim() === '') {
-                console.warn(`Video ${video.title} missing embed code`);
-            } else {
-                console.log(`Video ${video.title} has embed: ${video.videoEmbed.substring(0, 50)}...`);
+                console.log(`Extracting embed for ${video.title}...`);
+                video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                
+                // Store the extracted embed for future use
+                if (video.videoEmbed) {
+                    this.videoStorage.set(video.videoId, video);
+                    console.log(`Stored embed for ${video.title}`);
+                } else {
+                    console.warn(`Could not extract embed for ${video.title}`);
+                }
             }
-        });
+        }
         
         // Download all files with unique content
         await this.downloadAllFiles();
