@@ -633,32 +633,117 @@ class VideoManager {
 
     async loadCurrentVideos() {
         await this.loadAllVideos();
-        this.displayVideoList();
+        this.displayCurrentVideos();
     }
 
-    displayVideoList() {
-        const container = document.getElementById('videoItems');
-        container.innerHTML = '';
-        
+    async displayCurrentVideos() {
+        const videoList = document.getElementById('videoItems');
         if (this.videosData.length === 0) {
-            container.innerHTML = '<p style="color: #999;">No videos found</p>';
+            videoList.innerHTML = '<p>No videos found. Add your first video above!</p>';
+            return;
+        }
+
+        let html = '';
+        this.videosData.forEach((video, index) => {
+            html += `
+                <div class="video-item" style="border: 1px solid #444; padding: 15px; margin: 10px 0; border-radius: 5px; background: #2a2a2a;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <h4 style="color: #ff6b6b; margin: 0 0 5px 0;">${video.title}</h4>
+                            <p style="color: #ccc; margin: 0 0 5px 0; font-size: 14px;">${video.description}</p>
+                            <small style="color: #888;">Tags: ${video.tags}</small>
+                            <div style="margin-top: 8px;">
+                                <small style="color: ${video.videoEmbed ? '#4CAF50' : '#ff6b6b'};">
+                                    ${video.videoEmbed ? '✅ Has embed code' : '❌ No embed code'}
+                                </small>
+                            </div>
+                        </div>
+                        <button onclick="videoManager.deleteVideo('${video.videoId}')" 
+                                style="background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; margin-left: 15px;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Add bulk delete option
+        html += `
+            <div style="margin-top: 20px; padding: 15px; background: #333; border-radius: 5px;">
+                <h4 style="color: #ff9800; margin: 0 0 10px 0;">🧹 Bulk Actions</h4>
+                <button onclick="videoManager.deleteAllVideos()" 
+                        style="background: #ff4444; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer; margin-right: 10px;">
+                    🗑️ Delete All Videos
+                </button>
+                <button onclick="videoManager.deleteVideosWithoutEmbeds()" 
+                        style="background: #ff9800; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer;">
+                    🧹 Delete Videos Without Embeds
+                </button>
+            </div>
+        `;
+        
+        videoList.innerHTML = html;
+    }
+
+    // Delete individual video
+    async deleteVideo(videoId) {
+        if (!confirm('Are you sure you want to delete this video?')) return;
+        
+        // Remove from storage
+        this.videoStorage.delete(videoId);
+        
+        // Remove from current data
+        this.videosData = this.videosData.filter(video => video.videoId !== videoId);
+        
+        // Refresh display and regenerate files
+        this.displayCurrentVideos();
+        await this.downloadAllFiles();
+        
+        this.showStatus('Video deleted! Download and upload the new files.', 'success');
+    }
+
+    // Delete all videos
+    async deleteAllVideos() {
+        if (!confirm('Are you sure you want to delete ALL videos? This cannot be undone!')) return;
+        
+        // Clear storage
+        this.videoStorage.clear();
+        this.videosData = [];
+        
+        // Refresh display and regenerate files
+        this.displayCurrentVideos();
+        await this.downloadAllFiles();
+        
+        this.showStatus('All videos deleted! Download and upload the new files.', 'success');
+    }
+
+    // Delete videos without embed codes
+    async deleteVideosWithoutEmbeds() {
+        const videosWithoutEmbeds = this.videosData.filter(video => !video.videoEmbed || video.videoEmbed.trim() === '');
+        
+        if (videosWithoutEmbeds.length === 0) {
+            this.showStatus('No videos without embeds found.', 'info');
             return;
         }
         
-        this.videosData.forEach((video, index) => {
-            const item = document.createElement('div');
-            item.className = 'video-item';
-            item.innerHTML = `
-                <h4>#${index + 1} - ${video.title}</h4>
-                <p>${video.description}</p>
-                <p style="font-size: 12px; color: #666;">Tags: ${video.tags}</p>
-            `;
-            container.appendChild(item);
+        if (!confirm(`Delete ${videosWithoutEmbeds.length} videos without embed codes?`)) return;
+        
+        // Remove videos without embeds
+        videosWithoutEmbeds.forEach(video => {
+            this.videoStorage.delete(video.videoId);
         });
+        
+        this.videosData = this.videosData.filter(video => video.videoEmbed && video.videoEmbed.trim() !== '');
+        
+        // Refresh display and regenerate files
+        this.displayCurrentVideos();
+        await this.downloadAllFiles();
+        
+        this.showStatus(`Deleted ${videosWithoutEmbeds.length} videos without embeds! Download and upload the new files.`, 'success');
     }
 }
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new VideoManager();
+    window.videoManager = new VideoManager();
 });
