@@ -565,7 +565,7 @@ class VideoManager {
             
             const cardDiv = document.createElement('a');
             cardDiv.className = 'card';
-            cardDiv.href = videoFileName;
+            cardDiv.href = `../${videoFileName}`;
             
             cardDiv.innerHTML = `
                 <div class="thumb">
