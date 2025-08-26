@@ -360,8 +360,8 @@ class VideoManager {
     }
 
     async regeneratePages() {
-        // Force simple individual downloads
-        await this.forceSimpleDownloads();
+        // Use ZIP download for adding videos
+        await this.downloadAllFiles();
     }
 
     async forceSimpleDownloads() {
@@ -1000,25 +1000,40 @@ class VideoManager {
             return;
         }
 
-        let html = '';
+        let html = `
+            <div style="margin-bottom: 20px; padding: 15px; background: #333; border-radius: 5px;">
+                <h4 style="color: #ff9800; margin: 0 0 10px 0;">🎯 Bulk Selection</h4>
+                <button onclick="videoManager.selectAllVideos()" 
+                        style="background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; margin-right: 10px;">
+                    ✅ Select All
+                </button>
+                <button onclick="videoManager.deselectAllVideos()" 
+                        style="background: #666; color: white; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; margin-right: 10px;">
+                    ❌ Deselect All
+                </button>
+                <button onclick="videoManager.deleteSelectedVideos()" 
+                        style="background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer;">
+                    🗑️ Delete Selected
+                </button>
+            </div>
+        `;
+        
         this.videosData.forEach((video, index) => {
             html += `
                 <div class="video-item" style="border: 1px solid #444; padding: 15px; margin: 10px 0; border-radius: 5px; background: #2a2a2a;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <h4 style="color: #ff6b6b; margin: 0 0 5px 0;">${video.title}</h4>
-                            <p style="color: #ccc; margin: 0 0 5px 0; font-size: 14px;">${video.description}</p>
-                            <small style="color: #888;">Tags: ${video.tags}</small>
-                            <div style="margin-top: 8px;">
-                                <small style="color: ${video.videoEmbed ? '#4CAF50' : '#ff6b6b'};">
-                                    ${video.videoEmbed ? '✅ Has embed code' : '❌ No embed code'}
+                        <div style="display: flex; align-items: flex-start; gap: 15px;">
+                            <input type="checkbox" class="video-select-checkbox" value="${video.videoId}" 
+                                   style="margin-top: 5px; transform: scale(1.2);">
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: #fff;">${video.title}</h4>
+                                <p style="margin: 0 0 5px 0; color: #ccc; font-size: 14px;">${video.description}</p>
+                                <small style="color: #999;">Tags: ${video.tags}</small><br>
+                                <small style="color: ${video.videoEmbed ? '#4CAF50' : '#ff4444'};">
+                                    Embed: ${video.videoEmbed ? '✅ Available' : '❌ Missing'}
                                 </small>
                             </div>
                         </div>
-                        <button onclick="videoManager.deleteVideo('${video.videoId}')" 
-                                style="background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 3px; cursor: pointer; margin-left: 15px;">
-                            🗑️ Delete
-                        </button>
                     </div>
                 </div>
             `;
@@ -1027,7 +1042,7 @@ class VideoManager {
         // Add bulk delete option
         html += `
             <div style="margin-top: 20px; padding: 15px; background: #333; border-radius: 5px;">
-                <h4 style="color: #ff9800; margin: 0 0 10px 0;">🧹 Bulk Actions</h4>
+                <h4 style="color: #ff9800; margin: 0 0 10px 0;">🧹 Quick Actions</h4>
                 <button onclick="videoManager.deleteAllVideos()" 
                         style="background: #ff4444; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer; margin-right: 10px;">
                     🗑️ Delete All Videos
@@ -1057,7 +1072,7 @@ class VideoManager {
         
         // Only download if there are videos remaining
         if (this.videosData.length > 0) {
-            await this.forceSimpleDownloads();
+            await this.downloadAllFiles();
         } else {
             // Create empty index.html for empty site
             const emptyHtml = await this.generateEmptyIndexPage();
@@ -1125,7 +1140,7 @@ class VideoManager {
         this.displayCurrentVideos();
         
         if (this.videosData.length > 0) {
-            await this.forceSimpleDownloads();
+            await this.downloadAllFiles();
         } else {
             // Create empty index.html for empty site
             const emptyHtml = await this.generateEmptyIndexPage();
@@ -1142,6 +1157,58 @@ class VideoManager {
         }
         
         this.showStatus(`Deleted ${videosWithoutEmbeds.length} videos without embeds! Download and upload the new files.`, 'success');
+    }
+
+    // Bulk selection methods
+    selectAllVideos() {
+        const checkboxes = document.querySelectorAll('.video-select-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    }
+
+    deselectAllVideos() {
+        const checkboxes = document.querySelectorAll('.video-select-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+    }
+
+    async deleteSelectedVideos() {
+        const checkboxes = document.querySelectorAll('.video-select-checkbox:checked');
+        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (selectedIds.length === 0) {
+            this.showStatus('No videos selected for deletion.', 'info');
+            return;
+        }
+        
+        if (!confirm(`Delete ${selectedIds.length} selected video(s)?`)) return;
+        
+        // Remove selected videos from storage and data
+        selectedIds.forEach(videoId => {
+            this.videoStorage.delete(videoId);
+        });
+        
+        this.videosData = this.videosData.filter(video => !selectedIds.includes(video.videoId));
+        
+        // Refresh display and regenerate files
+        this.displayCurrentVideos();
+        
+        if (this.videosData.length > 0) {
+            await this.downloadAllFiles();
+        } else {
+            // Create empty index.html for empty site
+            const emptyHtml = await this.generateEmptyIndexPage();
+            const blob = new Blob([emptyHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        this.showStatus(`Deleted ${selectedIds.length} selected video(s)! Download and upload the new files.`, 'success');
     }
 
     async generateEmptyIndexPage() {
