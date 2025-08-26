@@ -518,7 +518,7 @@ class VideoManager {
         const videoFileName = this.generateVideoFileName(videoData.title, globalIndex);
         
         // Load video template
-        const templateResponse = await fetch('../video-template.html');
+        const templateResponse = await fetch('../videos/first-video.html');
         const templateHtml = await templateResponse.text();
         
         const parser = new DOMParser();
@@ -530,19 +530,9 @@ class VideoManager {
         if (h1) h1.textContent = videoData.title;
         
         // Update video embed
-        const iframe = doc.querySelector('#videoPlayer');
-        if (iframe && videoData.videoEmbed) {
-            // Extract src from embed code
-            const embedMatch = videoData.videoEmbed.match(/src="([^"]+)"/);
-            if (embedMatch) {
-                iframe.src = embedMatch[1];
-            } else {
-                // If no src found, replace entire iframe with embed code
-                const playerDiv = doc.querySelector('.responsive-embed');
-                if (playerDiv) {
-                    playerDiv.innerHTML = videoData.videoEmbed;
-                }
-            }
+        const playerDiv = doc.querySelector('.responsive-embed');
+        if (playerDiv) {
+            playerDiv.innerHTML = videoData.videoEmbed;
         }
         
         // Update related videos section with other videos
@@ -570,7 +560,7 @@ class VideoManager {
             
             const cardDiv = document.createElement('a');
             cardDiv.className = 'card';
-            cardDiv.href = `../${videoFileName}`;
+            cardDiv.href = videoFileName;
             
             cardDiv.innerHTML = `
                 <div class="thumb">
