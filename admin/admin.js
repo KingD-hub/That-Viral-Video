@@ -360,8 +360,67 @@ class VideoManager {
     }
 
     async regeneratePages() {
-        // Download all files together
-        await this.downloadAllFiles();
+        // Force simple individual downloads
+        await this.forceSimpleDownloads();
+    }
+
+    async forceSimpleDownloads() {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        console.log('🚀 Starting simple file downloads...');
+        
+        // Calculate actual pages needed
+        const actualPagesNeeded = Math.ceil(this.videosData.length / this.maxVideosPerPage);
+        
+        // Download main pages
+        for (let pageNum = 1; pageNum <= actualPagesNeeded; pageNum++) {
+            const startIndex = (pageNum - 1) * this.maxVideosPerPage;
+            const endIndex = startIndex + this.maxVideosPerPage;
+            const pageVideos = this.videosData.slice(startIndex, endIndex);
+            
+            if (pageVideos.length > 0) {
+                const pageHtml = await this.generatePageHTML(pageNum, pageVideos, actualPagesNeeded);
+                const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
+                
+                // Force download immediately
+                const blob = new Blob([pageHtml], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log(`✅ Downloaded: ${fileName}`);
+                await delay(800);
+            }
+        }
+        
+        // Download video pages
+        for (let i = 0; i < this.videosData.length; i++) {
+            const videoHtml = await this.generateVideoPageHTML(this.videosData[i], i + 1);
+            const videoFileName = this.generateVideoFileName(this.videosData[i].title, i + 1);
+            
+            // Force download immediately
+            const blob = new Blob([videoHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = videoFileName;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log(`✅ Downloaded video: ${videoFileName}`);
+            await delay(600);
+        }
+        
+        console.log('🎉 All downloads completed!');
     }
 
     async generatePage(pageNum, videos, totalPages) {
