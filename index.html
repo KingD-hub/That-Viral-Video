@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DailyClips - Hot Videos</title>
@@ -9,10 +10,10 @@
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     
     <!-- Popunder Ad -->
-    <script type="text/javascript" src="//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js"></script>
+    <script type='text/javascript' src='//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js'></script>
     
     <!-- Social Bar Ad -->
-    <script type="text/javascript" src="//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js"></script>
+    <script type='text/javascript' src='//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js'></script>
 </head>
 <body>
     <header>
@@ -29,40 +30,18 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Tricky Big Boobs StepSis Swap with my Sex Doll Tantaly" data-description="WOW" data-tags="wow, yeah">
-            <a href="videos/tricky-big-boobs-stepsis-swap-with-my-sex-doll-tan.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/3d/8b/38/3d8b381430f59b3d1b5f47a3c67a9dd4-5/3d8b381430f59b3d1b5f47a3c67a9dd4.30.jpg" alt="Tricky Big Boobs StepSis Swap with my Sex Doll Tantaly">
-                </div>
-                <div class="card-content">
-                    <h2>Tricky Big Boobs StepSis Swap with my Sex Doll Tantaly</h2>
-                    <p>WOW</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal" data-description="Dick in between ass cheeks. Click to watch now." data-tags="cheating,wife,moriah mills">
-            <a href="videos/cheating-wife-moriah-mills-gets-drilled-by-husband.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/22/e5/59/22e55995427a107de19f41cffd1ad2b2/22e55995427a107de19f41cffd1ad2b2.9.jpg" alt="Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal">
-                </div>
-                <div class="card-content">
-                    <h2>Cheating Wife (Moriah Mills) Gets Drilled By Husbands Pal</h2>
-                    <p>Dick in between ass cheeks. Click to watch now.</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="She let him fuck her ass hole for job" data-description="Job interview takes an unexpected turn." data-tags="job,interview,ass">
-            <a href="videos/she-let-him-fuck-her-ass-hole-for-job.html">
-                <div class="thumb-container">
-                    <img src="https://drive.google.com/thumbnail?id=1P69-qsgWKSD173hkuyWjUeh49DOth2ke" alt="She let him fuck her ass hole for job">
-                </div>
-                <div class="card-content">
-                    <h2>She let him fuck her ass hole for job</h2>
-                    <p>Job interview takes an unexpected turn.</p>
-                </div>
-            </a>
-        </div></div>
+        <div class="video-grid" id="videoGrid">
+            <!-- Videos will be loaded dynamically by admin panel -->
+            <div style="text-align: center; padding: 50px; color: #ccc;">
+                <h3>No videos yet</h3>
+                <p>Add videos through the <a href="admin/" style="color: #ff6b6b;">admin panel</a></p>
+            </div>
+        </div>
 
         <!-- Pagination will be generated dynamically -->
-        <div class="pagination" id="pagination"><span class="current">1</span></div>
+        <div class="pagination" id="pagination">
+            <!-- Pagination links will be added by admin panel -->
+        </div>
 
         <!-- Native Banner Ad -->
         <div class="native-banner-slot" style="text-align: center; margin: 30px 0; padding: 20px;">
@@ -86,8 +65,8 @@
   </main>
 
     <footer>
-        <p>© 2024 DailyClips. All rights reserved.</p>
-        <a href="/legal">Legal</a>
+        <p>&copy; 2024 DailyClips. All rights reserved.</p>
+        <a href="legal.html">Legal</a>
   </footer>
 
   <script>
@@ -119,93 +98,5 @@
             }
         });
   </script>
-
-
-<script>
-        let allVideosData = [];
-        let originalVideoGrid = '';
-        
-        // Load all videos data from all pages
-        async function loadAllVideosData() {
-            if (allVideosData.length > 0) return; // Already loaded
-            
-            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
-            
-            for (const page of pages) {
-                try {
-                    const response = await fetch(page);
-                    if (!response.ok) continue;
-                    
-                    const html = await response.text();
-                    const parser = new DOMParser();
-                    const pageDoc = parser.parseFromString(html, 'text/html');
-                    const videoCards = pageDoc.querySelectorAll('.video-card');
-                    
-                    videoCards.forEach(card => {
-                        const title = card.getAttribute('data-title');
-                        const description = card.getAttribute('data-description');
-                        const tags = card.getAttribute('data-tags');
-                        const link = card.querySelector('a').href;
-                        const img = card.querySelector('img');
-                        
-                        allVideosData.push({
-                            title: title,
-                            description: description,
-                            tags: tags,
-                            link: link,
-                            thumbnail: img ? img.src : '',
-                            html: card.outerHTML,
-                            page: page
-                        });
-                    });
-                } catch (error) {
-                    console.log('Could not load page:', page);
-                }
-            }
-        }
-        
-        async function searchVideos() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
-            const videoGrid = document.querySelector('.video-grid');
-            
-            if (!originalVideoGrid) {
-                originalVideoGrid = videoGrid.innerHTML;
-            }
-            
-            if (searchTerm === '') {
-                // Restore original content
-                videoGrid.innerHTML = originalVideoGrid;
-                return;
-            }
-            
-            // Load all videos data if not already loaded
-            await loadAllVideosData();
-            
-            // Filter videos based on search term
-            const matchingVideos = allVideosData.filter(video => {
-                return video.title.toLowerCase().includes(searchTerm) ||
-                       video.description.toLowerCase().includes(searchTerm) ||
-                       video.tags.toLowerCase().includes(searchTerm);
-            });
-            
-            // Display matching videos
-            if (matchingVideos.length === 0) {
-                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
-            } else {
-                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
-            }
-        }
-        
-        // Clear search when search box is empty
-        document.getElementById('searchBox').addEventListener('input', function() {
-            if (this.value === '') {
-                const videoGrid = document.querySelector('.video-grid');
-                if (originalVideoGrid) {
-                    videoGrid.innerHTML = originalVideoGrid;
-                }
-            }
-        });
-        
-        // Load videos data on page load
-        document.addEventListener('DOMContentLoaded', loadAllVideosData);
-        </script></body></html>
+</body>
+</html>
