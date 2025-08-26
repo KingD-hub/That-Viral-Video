@@ -193,40 +193,19 @@
         <div id="status" class="status"></div>
 
         <div class="form-container">
-            <form id="videoForm">
-                <div class="form-group">
-                    <label for="title">Video Title</label>
-                    <input type="text" id="title" name="title" required>
-                    <div class="hint">Enter the title that will appear on the video card</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" required></textarea>
-                    <div class="hint">Brief description that appears under the title</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="tags">Tags</label>
-                    <input type="text" id="tags" name="tags" required>
-                    <div class="hint">Comma-separated tags for search (e.g., "teen,hardcore,hd")</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="thumbnail">Thumbnail URL</label>
-                    <input type="url" id="thumbnail" name="thumbnail" required>
-                    <div class="hint">Direct link to the thumbnail image</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="videoEmbed">Video Embed Code</label>
-                    <textarea id="videoEmbed" name="videoEmbed" required></textarea>
-                    <div class="hint">Complete iframe embed code (e.g., &lt;iframe src="..." ...&gt;&lt;/iframe&gt;)</div>
-                </div>
-
-                <button type="submit" class="btn" id="submitBtn">Add Video</button>
+            <h2>Add New Videos</h2>
+            <div id="formsContainer">
+                <!-- Forms will be dynamically added here -->
+            </div>
+            
+            <div style="margin: 20px 0; text-align: center;">
+                <button type="button" class="btn" id="addFormBtn" style="background: #4CAF50;">➕ Add Another Video</button>
+            </div>
+            
+            <div style="margin: 20px 0; text-align: center;">
+                <button type="button" class="btn" id="submitAllBtn" style="background: #2196F3; font-size: 16px; padding: 12px 24px;">🚀 Add All Videos</button>
                 <button type="button" class="btn" id="regenerateBtn" style="background: #ff9800; margin-left: 10px;">Regenerate All Videos</button>
-            </form>
+            </div>
         </div>
 
         <div class="loading" id="loading">

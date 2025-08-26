@@ -12,11 +12,17 @@ class VideoManager {
     }
 
     setupEventListeners() {
-        const form = document.getElementById('videoForm');
-        form.addEventListener('submit', (e) => this.handleSubmit(e));
+        const addFormBtn = document.getElementById('addFormBtn');
+        addFormBtn.addEventListener('click', () => this.addVideoForm());
+        
+        const submitAllBtn = document.getElementById('submitAllBtn');
+        submitAllBtn.addEventListener('click', () => this.handleSubmitAll());
         
         const regenerateBtn = document.getElementById('regenerateBtn');
         regenerateBtn.addEventListener('click', () => this.handleRegenerate());
+        
+        // Add initial form
+        this.addVideoForm();
     }
 
     async handleRegenerate() {
@@ -37,37 +43,153 @@ class VideoManager {
         }
     }
 
-    async handleSubmit(e) {
-        e.preventDefault();
+    addVideoForm() {
+        const formsContainer = document.getElementById('formsContainer');
+        const formCount = formsContainer.children.length + 1;
         
-        const submitBtn = document.getElementById('submitBtn');
+        const formDiv = document.createElement('div');
+        formDiv.className = 'video-form';
+        formDiv.style.cssText = 'border: 2px solid #444; padding: 20px; margin: 15px 0; border-radius: 8px; background: #2a2a2a; position: relative;';
+        
+        formDiv.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #ff6b6b; margin: 0;">Video ${formCount}</h3>
+                ${formCount > 1 ? `<button type="button" class="remove-form-btn" onclick="this.parentElement.parentElement.remove(); videoManager.updateFormNumbers();" style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">❌ Remove</button>` : ''}
+            </div>
+            
+            <div class="form-group">
+                <label>Video Title</label>
+                <input type="text" name="title" required style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
+                <div class="hint">Enter the video title as it will appear on the site</div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" required style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; min-height: 80px;"></textarea>
+                <div class="hint">Brief description of the video content</div>
+            </div>
+
+            <div class="form-group">
+                <label>Tags</label>
+                <input type="text" name="tags" required style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
+                <div class="hint">Comma-separated tags (e.g., "teen,hardcore,blonde")</div>
+            </div>
+
+            <div class="form-group">
+                <label>Thumbnail URL</label>
+                <input type="url" name="thumbnail" required style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
+                <div class="hint">Direct link to the thumbnail image</div>
+            </div>
+
+            <div class="form-group">
+                <label>Video Embed Code</label>
+                <textarea name="videoEmbed" required style="width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; min-height: 100px;"></textarea>
+                <div class="hint">Complete iframe embed code (e.g., &lt;iframe src="..." ...&gt;&lt;/iframe&gt;)</div>
+            </div>
+        `;
+        
+        formsContainer.appendChild(formDiv);
+    }
+
+    updateFormNumbers() {
+        const forms = document.querySelectorAll('.video-form');
+        forms.forEach((form, index) => {
+            const header = form.querySelector('h3');
+            header.textContent = `Video ${index + 1}`;
+        });
+    }
+
+    async handleSubmitAll() {
+        const submitAllBtn = document.getElementById('submitAllBtn');
         const loading = document.getElementById('loading');
+        const forms = document.querySelectorAll('.video-form');
         
-        submitBtn.disabled = true;
+        if (forms.length === 0) {
+            this.showStatus('No video forms found. Add at least one video.', 'error');
+            return;
+        }
+        
+        submitAllBtn.disabled = true;
         loading.style.display = 'block';
         
         try {
-            const formData = new FormData(e.target);
-            const videoData = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                tags: formData.get('tags'),
-                thumbnail: formData.get('thumbnail'),
-                videoEmbed: formData.get('videoEmbed'),
-                timestamp: new Date().toISOString()
-            };
-
-            await this.addNewVideo(videoData);
-            this.showStatus('Video added successfully! Pages updated.', 'success');
-            e.target.reset();
-            this.loadCurrentVideos();
+            const videosData = [];
             
+            // Collect data from all forms
+            for (let i = 0; i < forms.length; i++) {
+                const form = forms[i];
+                const inputs = form.querySelectorAll('input, textarea');
+                const videoData = {};
+                
+                inputs.forEach(input => {
+                    if (input.name) {
+                        videoData[input.name] = input.value.trim();
+                    }
+                });
+                
+                // Validate required fields
+                if (!videoData.title || !videoData.description || !videoData.tags || !videoData.thumbnail || !videoData.videoEmbed) {
+                    throw new Error(`Video ${i + 1} is missing required fields`);
+                }
+                
+                videoData.timestamp = new Date().toISOString();
+                videosData.push(videoData);
+            }
+            
+            // Process all videos
+            await this.addMultipleVideos(videosData);
+            
+            // Clear all forms
+            document.getElementById('formsContainer').innerHTML = '';
+            this.addVideoForm(); // Add one fresh form
+            
+            // Refresh video list
+            await this.loadCurrentVideos();
+            
+            this.showStatus(`Successfully added ${videosData.length} videos! Download all files and upload them to your site.`, 'success');
         } catch (error) {
-            this.showStatus('Error adding video: ' + error.message, 'error');
+            this.showStatus('Error adding videos: ' + error.message, 'error');
         } finally {
-            submitBtn.disabled = false;
+            submitAllBtn.disabled = false;
             loading.style.display = 'none';
         }
+    }
+
+    async addMultipleVideos(videosDataArray) {
+        // Load current videos from all pages
+        await this.loadAllVideos();
+        
+        // Ensure ALL existing videos have their embeds stored
+        console.log('Ensuring all existing videos have embeds stored...');
+        for (let video of this.videosData) {
+            if (!video.videoEmbed || video.videoEmbed.trim() === '') {
+                console.log(`Re-extracting embed for existing video: ${video.title}`);
+                video.videoEmbed = await this.extractEmbedFromVideoPage(video.videoUrl);
+                if (video.videoEmbed) {
+                    this.videoStorage.set(video.videoId, video);
+                    console.log(`✅ Re-stored embed for ${video.title}`);
+                }
+            }
+        }
+        
+        // Add all new videos to the beginning (newest first)
+        for (let i = videosDataArray.length - 1; i >= 0; i--) {
+            const videoData = videosDataArray[i];
+            const videoId = this.generateVideoId(videoData.title);
+            
+            // Store the new video with its embed code
+            this.videoStorage.set(videoId, videoData);
+            
+            // Add to beginning of array
+            this.videosData.unshift({
+                ...videoData,
+                videoId: videoId,
+                videoEmbed: videoData.videoEmbed
+            });
+        }
+        
+        // Regenerate all pages with complete data
+        await this.regeneratePages();
     }
 
     async addNewVideo(videoData) {
@@ -477,20 +599,24 @@ class VideoManager {
         const rootFolder = zip.folder("root");
         const videosFolder = zip.folder("videos");
         
-        // Calculate total pages needed (only pages with content)
-        const totalPages = Math.ceil(this.videosData.length / this.maxVideosPerPage);
+        // Calculate actual pages needed based on video count
+        const actualPagesNeeded = Math.ceil(this.videosData.length / this.maxVideosPerPage);
         
-        // Generate main pages (only needed pages)
-        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        console.log(`Total videos: ${this.videosData.length}, Pages needed: ${actualPagesNeeded}`);
+        
+        // Generate only the pages that have content
+        for (let pageNum = 1; pageNum <= actualPagesNeeded; pageNum++) {
             const startIndex = (pageNum - 1) * this.maxVideosPerPage;
             const endIndex = startIndex + this.maxVideosPerPage;
             const pageVideos = this.videosData.slice(startIndex, endIndex);
             
-            // Only generate page if it has videos
             if (pageVideos.length > 0) {
-                const pageHtml = await this.generatePageHTML(pageNum, pageVideos, totalPages);
+                console.log(`Generating page ${pageNum} with ${pageVideos.length} videos`);
+                const pageHtml = await this.generatePageHTML(pageNum, pageVideos, actualPagesNeeded);
                 const fileName = pageNum === 1 ? 'index.html' : `page${pageNum}.html`;
                 rootFolder.file(fileName, pageHtml);
+            } else {
+                console.log(`Skipping page ${pageNum} - no videos`);
             }
         }
         
@@ -526,20 +652,125 @@ class VideoManager {
         const parser = new DOMParser();
         const doc = parser.parseFromString(templateHtml, 'text/html');
         
-        // Clear existing video grid
+        // Update video grid
         const videoGrid = doc.querySelector('.video-grid');
-        videoGrid.innerHTML = '';
-        
-        // Add videos
-        videos.forEach((video, index) => {
-            const videoCard = this.createVideoCardHTML(video, index + 1 + ((pageNum - 1) * this.maxVideosPerPage));
-            videoGrid.appendChild(videoCard);
-        });
+        if (videoGrid) {
+            videoGrid.innerHTML = '';
+            
+            videos.forEach((video, index) => {
+                const videoCard = this.createVideoCard(video, index);
+                videoGrid.appendChild(videoCard);
+            });
+        }
         
         // Update pagination
         this.updatePagination(doc, pageNum, totalPages);
         
+        // Add global search functionality
+        this.addGlobalSearchScript(doc);
+        
         return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    }
+
+    addGlobalSearchScript(doc) {
+        // Remove existing search script
+        const existingScript = doc.querySelector('script:last-of-type');
+        if (existingScript && existingScript.textContent.includes('searchVideos')) {
+            existingScript.remove();
+        }
+        
+        // Add new global search script
+        const script = doc.createElement('script');
+        script.textContent = `
+        let allVideosData = [];
+        let originalVideoGrid = '';
+        
+        // Load all videos data from all pages
+        async function loadAllVideosData() {
+            if (allVideosData.length > 0) return; // Already loaded
+            
+            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page);
+                    if (!response.ok) continue;
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const pageDoc = parser.parseFromString(html, 'text/html');
+                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        const title = card.getAttribute('data-title');
+                        const description = card.getAttribute('data-description');
+                        const tags = card.getAttribute('data-tags');
+                        const link = card.querySelector('a').href;
+                        const img = card.querySelector('img');
+                        
+                        allVideosData.push({
+                            title: title,
+                            description: description,
+                            tags: tags,
+                            link: link,
+                            thumbnail: img ? img.src : '',
+                            html: card.outerHTML,
+                            page: page
+                        });
+                    });
+                } catch (error) {
+                    console.log('Could not load page:', page);
+                }
+            }
+        }
+        
+        async function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const videoGrid = document.querySelector('.video-grid');
+            
+            if (!originalVideoGrid) {
+                originalVideoGrid = videoGrid.innerHTML;
+            }
+            
+            if (searchTerm === '') {
+                // Restore original content
+                videoGrid.innerHTML = originalVideoGrid;
+                return;
+            }
+            
+            // Load all videos data if not already loaded
+            await loadAllVideosData();
+            
+            // Filter videos based on search term
+            const matchingVideos = allVideosData.filter(video => {
+                return video.title.toLowerCase().includes(searchTerm) ||
+                       video.description.toLowerCase().includes(searchTerm) ||
+                       video.tags.toLowerCase().includes(searchTerm);
+            });
+            
+            // Display matching videos
+            if (matchingVideos.length === 0) {
+                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
+            } else {
+                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
+            }
+        }
+        
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoGrid = document.querySelector('.video-grid');
+                if (originalVideoGrid) {
+                    videoGrid.innerHTML = originalVideoGrid;
+                }
+            }
+        });
+        
+        // Load videos data on page load
+        document.addEventListener('DOMContentLoaded', loadAllVideosData);
+        `;
+        
+        doc.body.appendChild(script);
     }
 
     async generateVideoPageHTML(videoData, globalIndex) {
