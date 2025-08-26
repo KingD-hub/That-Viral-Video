@@ -784,7 +784,7 @@ class VideoManager {
             videoGrid.innerHTML = '';
             
             videos.forEach((video, index) => {
-                const videoCard = this.createVideoCard(video, index);
+                const videoCard = this.createVideoCardHTML(video, index);
                 videoGrid.appendChild(videoCard);
             });
         }
@@ -1054,7 +1054,24 @@ class VideoManager {
         
         // Refresh display and regenerate files
         this.displayCurrentVideos();
-        await this.downloadAllFiles();
+        
+        // Only download if there are videos remaining
+        if (this.videosData.length > 0) {
+            await this.forceSimpleDownloads();
+        } else {
+            // Create empty index.html for empty site
+            const emptyHtml = await this.generateEmptyIndexPage();
+            const blob = new Blob([emptyHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
         
         this.showStatus('Video deleted! Download and upload the new files.', 'success');
     }
@@ -1067,9 +1084,21 @@ class VideoManager {
         this.videoStorage.clear();
         this.videosData = [];
         
-        // Refresh display and regenerate files
+        // Refresh display
         this.displayCurrentVideos();
-        await this.downloadAllFiles();
+        
+        // Create empty index.html for empty site
+        const emptyHtml = await this.generateEmptyIndexPage();
+        const blob = new Blob([emptyHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         
         this.showStatus('All videos deleted! Download and upload the new files.', 'success');
     }
@@ -1094,9 +1123,48 @@ class VideoManager {
         
         // Refresh display and regenerate files
         this.displayCurrentVideos();
-        await this.downloadAllFiles();
+        
+        if (this.videosData.length > 0) {
+            await this.forceSimpleDownloads();
+        } else {
+            // Create empty index.html for empty site
+            const emptyHtml = await this.generateEmptyIndexPage();
+            const blob = new Blob([emptyHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
         
         this.showStatus(`Deleted ${videosWithoutEmbeds.length} videos without embeds! Download and upload the new files.`, 'success');
+    }
+
+    async generateEmptyIndexPage() {
+        // Load template
+        const templateResponse = await fetch('../index.html');
+        const templateHtml = await templateResponse.text();
+        
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(templateHtml, 'text/html');
+        
+        // Clear video grid and add empty message
+        const videoGrid = doc.querySelector('.video-grid');
+        if (videoGrid) {
+            videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos yet</h3><p>Add videos through the admin panel</p></div>';
+        }
+        
+        // Remove pagination
+        const pagination = doc.querySelector('.pagination');
+        if (pagination) {
+            pagination.remove();
+        }
+        
+        return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     }
 }
 
