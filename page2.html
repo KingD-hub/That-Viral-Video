@@ -1,68 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DailyClips - Page 2</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DailyClips - Hot Videos</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <!-- Popunder Ad -->
+    <script type="text/javascript" src="//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js"></script>
+    
+    <!-- Social Bar Ad -->
+    <script type="text/javascript" src="//pl27495784.profitableratecpm.com/b0/db/62/b0db62ad1f1a1d4102ccae80a8ecdf4a.js"></script>
 </head>
 <body>
-  <!-- ====== Adsterra/ExoClick POPUNDER (HEAD) ======
-       Replace SRC with your real popunder script to trigger background tabs.
-  -->
-  <script type='text/javascript' src='//pl27466028.profitableratecpm.com/1c/ec/ba/1cecba33959a73dc0225a98248e1e330.js'></script>
-
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="/">DailyClips</a>
-      <nav class="nav">
-        <a href="/">Home</a>
-        <a href="/legal.html">Legal</a>
-      </nav>
+    <header>
+        <h1>DailyClips</h1>
+        <p>Hot videos updated daily</p>
+        <div style="margin-top: 10px;">
+            <a href="admin/" style="color: #ff6b6b; text-decoration: none; font-size: 14px; padding: 5px 10px; border: 1px solid #ff6b6b; border-radius: 5px;">🔧 Admin Panel</a>
     </div>
   </header>
 
-  <main class="container">
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search videos..." />
-      <button onclick="performSearch()">🔍</button>
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" class="search-box" id="searchBox" placeholder="Search videos..." onkeyup="searchVideos()">
     </div>
 
-    <div class="video-grid">
-      <!-- Videos will be loaded here -->
-    </div>
+    <main>
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="She let him fuck her ass hole for job" data-description="Job interview takes an unexpected turn." data-tags="job,interview,ass">
+            <a href="videos/she-let-him-fuck-her-ass-hole-for-job.html">
+                <div class="thumb-container">
+                    <img src="https://drive.google.com/thumbnail?id=1P69-qsgWKSD173hkuyWjUeh49DOth2ke" alt="She let him fuck her ass hole for job">
+                </div>
+                <div class="card-content">
+                    <h2>She let him fuck her ass hole for job</h2>
+                    <p>Job interview takes an unexpected turn.</p>
+                </div>
+            </a>
+        </div></div>
 
-    <div class="pagination">
-      <a href="/" class="page-btn">← Previous</a>
-      <span class="page-info">Page 2</span>
-      <a href="/page3.html" class="page-btn">Next →</a>
+        <!-- Pagination -->
+        <div class="pagination"><a href="index.html">← Previous</a><a href="index.html">1</a><span class="current">2</span></div>
+
+        <!-- Native Banner Ad -->
+        <div class="native-banner-slot" style="text-align: center; margin: 30px 0; padding: 20px;">
+            <script async="async" data-cfasync="false" src="//pl27495792.profitableratecpm.com/8e51db288c92c2ddbe02fec1d76fb9ae/invoke.js"></script>
+            <div id="container-8e51db288c92c2ddbe02fec1d76fb9ae"></div>
+        </div>
+
+        <!-- Banner Ad -->
+    <div class="banner-slot">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '8222901a4a0a0abca1bf6e66669f066d',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/8222901a4a0a0abca1bf6e66669f066d/invoke.js"></script>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>© <span id="year"></span> DailyClips · 18+ Only · <a href="/legal.html">Legal</a></p>
-    </div>
+    <footer>
+        <p>© 2024 DailyClips. All rights reserved.</p>
+        <a href="/legal">Legal</a>
   </footer>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    
-    // Search functionality
-    function performSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        // Simple search implementation
-        console.log('Searching for:', query);
-      }
-    }
-    
-    // Enter key search
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        performSearch();
-      }
-    });
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
   </script>
-</body>
-</html>
+
+
+<script>
+        let allVideosData = [];
+        let originalVideoGrid = '';
+        
+        // Load all videos data from all pages
+        async function loadAllVideosData() {
+            if (allVideosData.length > 0) return; // Already loaded
+            
+            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page);
+                    if (!response.ok) continue;
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const pageDoc = parser.parseFromString(html, 'text/html');
+                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        const title = card.getAttribute('data-title');
+                        const description = card.getAttribute('data-description');
+                        const tags = card.getAttribute('data-tags');
+                        const link = card.querySelector('a').href;
+                        const img = card.querySelector('img');
+                        
+                        allVideosData.push({
+                            title: title,
+                            description: description,
+                            tags: tags,
+                            link: link,
+                            thumbnail: img ? img.src : '',
+                            html: card.outerHTML,
+                            page: page
+                        });
+                    });
+                } catch (error) {
+                    console.log('Could not load page:', page);
+                }
+            }
+        }
+        
+        async function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const videoGrid = document.querySelector('.video-grid');
+            
+            if (!originalVideoGrid) {
+                originalVideoGrid = videoGrid.innerHTML;
+            }
+            
+            if (searchTerm === '') {
+                // Restore original content
+                videoGrid.innerHTML = originalVideoGrid;
+                return;
+            }
+            
+            // Load all videos data if not already loaded
+            await loadAllVideosData();
+            
+            // Filter videos based on search term
+            const matchingVideos = allVideosData.filter(video => {
+                return video.title.toLowerCase().includes(searchTerm) ||
+                       video.description.toLowerCase().includes(searchTerm) ||
+                       video.tags.toLowerCase().includes(searchTerm);
+            });
+            
+            // Display matching videos
+            if (matchingVideos.length === 0) {
+                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
+            } else {
+                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
+            }
+        }
+        
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoGrid = document.querySelector('.video-grid');
+                if (originalVideoGrid) {
+                    videoGrid.innerHTML = originalVideoGrid;
+                }
+            }
+        });
+        
+        // Load videos data on page load
+        document.addEventListener('DOMContentLoaded', loadAllVideosData);
+        </script></body></html>
