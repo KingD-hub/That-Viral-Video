@@ -532,28 +532,12 @@ class VideoManager {
         // Update video embed
         const playerDiv = doc.querySelector('.responsive-embed');
         if (playerDiv) {
-            const existingIframe = playerDiv.querySelector('iframe');
-            if (existingIframe) {
-                existingIframe.remove();
-            }
-            
-            // Keep the fullscreen button
-            const fullscreenBtn = playerDiv.querySelector('.fullscreen-btn');
-            
             // Add new embed
             const embedContainer = document.createElement('div');
+            embedContainer.className = 'responsive-embed';
             embedContainer.innerHTML = videoData.videoEmbed;
-            const newIframe = embedContainer.querySelector('iframe');
-            if (newIframe) {
-                newIframe.id = 'videoPlayer';
-                // Ensure iframe has proper styling
-                newIframe.style.position = 'absolute';
-                newIframe.style.top = '0';
-                newIframe.style.left = '0';
-                newIframe.style.width = '100%';
-                newIframe.style.height = '100%';
-                playerDiv.appendChild(newIframe);
-            }
+            
+            playerDiv.parentNode.replaceChild(embedContainer, playerDiv);
         }
         
         // Update related videos section with other videos
