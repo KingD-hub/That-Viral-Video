@@ -170,43 +170,47 @@ class VideoManager {
     async extractEmbedFromVideoPage(videoUrl) {
         try {
             const response = await fetch(`../videos/${videoUrl}`);
-            if (!response.ok) return '';
+            if (!response.ok) {
+                console.log(`Failed to fetch ${videoUrl}: ${response.status}`);
+                return '';
+            }
             
             const html = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            // Try to find iframe in responsive-embed container
-            let iframe = doc.querySelector('.responsive-embed iframe');
-            
-            // If no iframe found, try to find any embed content in the container
-            if (!iframe) {
-                const embedContainer = doc.querySelector('.responsive-embed');
-                if (embedContainer) {
-                    // Look for any iframe in the container
-                    iframe = embedContainer.querySelector('iframe');
-                    
-                    // If still no iframe, get all content except fullscreen button
-                    if (!iframe) {
-                        const fullscreenBtn = embedContainer.querySelector('.fullscreen-btn');
-                        const clonedContainer = embedContainer.cloneNode(true);
-                        const clonedFullscreenBtn = clonedContainer.querySelector('.fullscreen-btn');
-                        if (clonedFullscreenBtn) {
-                            clonedFullscreenBtn.remove();
-                        }
-                        
-                        // Return the remaining content if it exists
-                        const content = clonedContainer.innerHTML.trim();
-                        if (content && content !== '') {
-                            return content;
-                        }
-                    }
-                }
+            // Find the responsive-embed container
+            const embedContainer = doc.querySelector('.responsive-embed');
+            if (!embedContainer) {
+                console.log(`No .responsive-embed container found in ${videoUrl}`);
+                return '';
             }
             
-            return iframe ? iframe.outerHTML : '';
+            // Look for iframe with id="videoPlayer" or any iframe
+            let iframe = embedContainer.querySelector('#videoPlayer') || embedContainer.querySelector('iframe');
+            
+            if (iframe) {
+                console.log(`Found iframe in ${videoUrl}:`, iframe.outerHTML.substring(0, 100));
+                return iframe.outerHTML;
+            }
+            
+            // If no iframe, get all content except fullscreen button
+            const clonedContainer = embedContainer.cloneNode(true);
+            const fullscreenBtn = clonedContainer.querySelector('.fullscreen-btn');
+            if (fullscreenBtn) {
+                fullscreenBtn.remove();
+            }
+            
+            const content = clonedContainer.innerHTML.trim();
+            if (content && content !== '') {
+                console.log(`Found embed content in ${videoUrl}:`, content.substring(0, 100));
+                return content;
+            }
+            
+            console.log(`No embed content found in ${videoUrl}`);
+            return '';
         } catch (error) {
-            console.error('Error extracting embed from video page:', error);
+            console.error('Error extracting embed from video page:', videoUrl, error);
             return '';
         }
     }
