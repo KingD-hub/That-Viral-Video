@@ -173,7 +173,8 @@ class VideoManager {
         }
         
         // Add all new videos to the beginning (newest first)
-        for (let i = videosDataArray.length - 1; i >= 0; i--) {
+        // Process in normal order so last form filled becomes newest
+        for (let i = 0; i < videosDataArray.length; i++) {
             const videoData = videosDataArray[i];
             const videoId = this.generateVideoId(videoData.title);
             
