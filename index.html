@@ -116,29 +116,48 @@
   </footer>
 
   <script>
-        // Background popup functionality - keeps users on site while ads open in background
+        // Window Location Override - Intercepts ad redirects when video was clicked
+        let lastVideoClicked = null;
+        let videoClickTime = 0;
+        
+        // Override window.location.href to intercept redirects
+        let originalLocationSetter = Object.getOwnPropertyDescriptor(window.location, 'href').set;
+        Object.defineProperty(window.location, 'href', {
+            set: function(url) {
+                // Check if this redirect is happening after a video click (within 3 seconds)
+                const timeSinceVideoClick = Date.now() - videoClickTime;
+                
+                if (lastVideoClicked && timeSinceVideoClick < 3000) {
+                    // Video was clicked recently - open video in new tab first
+                    const videoTab = window.open(lastVideoClicked, '_blank');
+                    if (videoTab) {
+                        videoTab.focus(); // User goes to video
+                    }
+                    
+                    // Clear the video click tracking
+                    lastVideoClicked = null;
+                    videoClickTime = 0;
+                }
+                
+                // Allow the ad redirect to proceed in original tab
+                originalLocationSetter.call(this, url);
+            },
+            get: function() {
+                return window.location.href;
+            }
+        });
+        
+        // Track video clicks
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers to all video links
             const videoLinks = document.querySelectorAll('.video-card a');
             
             videoLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    e.preventDefault(); // Stop normal link behavior
+                    // Store the video URL and timestamp
+                    lastVideoClicked = this.href;
+                    videoClickTime = Date.now();
                     
-                    const videoUrl = this.href;
-                    
-                    // Open video page in same tab (user stays on site)
-                    window.location.href = videoUrl;
-                    
-                    // Trigger background popup after short delay
-                    setTimeout(() => {
-                        // This creates the ad popup in background while user watches video
-                        const popup = window.open('', '_blank');
-                        if (popup) {
-                            popup.blur(); // Send popup to background
-                            window.focus(); // Keep main window focused
-                        }
-                    }, 1000);
+                    // Let the normal click proceed (which may trigger ads)
                 });
             });
         });
