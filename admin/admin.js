@@ -785,95 +785,55 @@ class VideoManager {
             existingScript.remove();
         }
         
-        // Add new global search script
+        // Add new script with both new tab functionality and search
         const script = doc.createElement('script');
         script.textContent = `
-        let allVideosData = [];
-        let originalVideoGrid = '';
-        
-        // Load all videos data from all pages
-        async function loadAllVideosData() {
-            if (allVideosData.length > 0) return; // Already loaded
+        // Simple new tab approach - all videos open in new tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoLinks = document.querySelectorAll('.video-card a');
             
-            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
-            
-            for (const page of pages) {
-                try {
-                    const response = await fetch(page);
-                    if (!response.ok) continue;
+            videoLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Stop normal link behavior
                     
-                    const html = await response.text();
-                    const parser = new DOMParser();
-                    const pageDoc = parser.parseFromString(html, 'text/html');
-                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    // Open video in new tab - user goes there
+                    const videoTab = window.open(this.href, '_blank');
+                    if (videoTab) {
+                        videoTab.focus(); // User switches to video tab
+                    }
                     
-                    videoCards.forEach(card => {
-                        const title = card.getAttribute('data-title');
-                        const description = card.getAttribute('data-description');
-                        const tags = card.getAttribute('data-tags');
-                        const link = card.querySelector('a').href;
-                        const img = card.querySelector('img');
-                        
-                        allVideosData.push({
-                            title: title,
-                            description: description,
-                            tags: tags,
-                            link: link,
-                            thumbnail: img ? img.src : '',
-                            html: card.outerHTML,
-                            page: page
-                        });
-                    });
-                } catch (error) {
-                    console.log('Could not load page:', page);
-                }
-            }
-        }
-        
-        async function searchVideos() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
-            const videoGrid = document.querySelector('.video-grid');
-            
-            if (!originalVideoGrid) {
-                originalVideoGrid = videoGrid.innerHTML;
-            }
-            
-            if (searchTerm === '') {
-                // Restore original content
-                videoGrid.innerHTML = originalVideoGrid;
-                return;
-            }
-            
-            // Load all videos data if not already loaded
-            await loadAllVideosData();
-            
-            // Filter videos based on search term
-            const matchingVideos = allVideosData.filter(video => {
-                return video.title.toLowerCase().includes(searchTerm) ||
-                       video.description.toLowerCase().includes(searchTerm) ||
-                       video.tags.toLowerCase().includes(searchTerm);
+                    // Original tab stays on homepage - ads can fire here normally
+                });
             });
+        });
+
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
             
-            // Display matching videos
-            if (matchingVideos.length === 0) {
-                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
-            } else {
-                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
-            }
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
-        
+
         // Clear search when search box is empty
         document.getElementById('searchBox').addEventListener('input', function() {
             if (this.value === '') {
-                const videoGrid = document.querySelector('.video-grid');
-                if (originalVideoGrid) {
-                    videoGrid.innerHTML = originalVideoGrid;
-                }
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
             }
         });
-        
-        // Load videos data on page load
-        document.addEventListener('DOMContentLoaded', loadAllVideosData);
         `;
         
         doc.body.appendChild(script);

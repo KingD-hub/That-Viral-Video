@@ -24,8 +24,7 @@
 
   <main class="container">
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search videos..." />
-      <button onclick="performSearch()">🔍</button>
+      <input type="text" id="searchBox" placeholder="Search videos..." onkeyup="searchVideos()" />
     </div>
 
     <div class="video-grid">
@@ -48,20 +47,51 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     
+    // Simple new tab approach - all videos open in new tabs
+    document.addEventListener('DOMContentLoaded', function() {
+        const videoLinks = document.querySelectorAll('.video-card a');
+        
+        videoLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); // Stop normal link behavior
+                
+                // Open video in new tab - user goes there
+                const videoTab = window.open(this.href, '_blank');
+                if (videoTab) {
+                    videoTab.focus(); // User switches to video tab
+                }
+                
+                // Original tab stays on homepage - ads can fire here normally
+            });
+        });
+    });
+
     // Search functionality
-    function performSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        // Simple search implementation
-        console.log('Searching for:', query);
-      }
+    function searchVideos() {
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        const videoCards = document.querySelectorAll('.video-card');
+        
+        videoCards.forEach(card => {
+            const title = card.getAttribute('data-title').toLowerCase();
+            const description = card.getAttribute('data-description').toLowerCase();
+            const tags = card.getAttribute('data-tags').toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
     }
-    
-    // Enter key search
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        performSearch();
-      }
+
+    // Clear search when search box is empty
+    document.getElementById('searchBox').addEventListener('input', function() {
+        if (this.value === '') {
+            const videoCards = document.querySelectorAll('.video-card');
+            videoCards.forEach(card => {
+                card.style.display = 'block';
+            });
+        }
     });
   </script>
 </body>
