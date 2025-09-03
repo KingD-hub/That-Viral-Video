@@ -116,6 +116,33 @@
   </footer>
 
   <script>
+        // Background popup functionality - keeps users on site while ads open in background
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all video links
+            const videoLinks = document.querySelectorAll('.video-card a');
+            
+            videoLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Stop normal link behavior
+                    
+                    const videoUrl = this.href;
+                    
+                    // Open video page in same tab (user stays on site)
+                    window.location.href = videoUrl;
+                    
+                    // Trigger background popup after short delay
+                    setTimeout(() => {
+                        // This creates the ad popup in background while user watches video
+                        const popup = window.open('', '_blank');
+                        if (popup) {
+                            popup.blur(); // Send popup to background
+                            window.focus(); // Keep main window focused
+                        }
+                    }, 1000);
+                });
+            });
+        });
+
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
@@ -147,6 +174,267 @@
 
 
 <script>
+        let allVideosData = [];
+        let originalVideoGrid = '';
+        
+        // Load all videos data from all pages
+        async function loadAllVideosData() {
+            if (allVideosData.length > 0) return; // Already loaded
+            
+            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page);
+                    if (!response.ok) continue;
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const pageDoc = parser.parseFromString(html, 'text/html');
+                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        const title = card.getAttribute('data-title');
+                        const description = card.getAttribute('data-description');
+                        const tags = card.getAttribute('data-tags');
+                        const link = card.querySelector('a').href;
+                        const img = card.querySelector('img');
+                        
+                        allVideosData.push({
+                            title: title,
+                            description: description,
+                            tags: tags,
+                            link: link,
+                            thumbnail: img ? img.src : '',
+                            html: card.outerHTML,
+                            page: page
+                        });
+                    });
+                } catch (error) {
+                    console.log('Could not load page:', page);
+                }
+            }
+        }
+        
+        async function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const videoGrid = document.querySelector('.video-grid');
+            
+            if (!originalVideoGrid) {
+                originalVideoGrid = videoGrid.innerHTML;
+            }
+            
+            if (searchTerm === '') {
+                // Restore original content
+                videoGrid.innerHTML = originalVideoGrid;
+                return;
+            }
+            
+            // Load all videos data if not already loaded
+            await loadAllVideosData();
+            
+            // Filter videos based on search term
+            const matchingVideos = allVideosData.filter(video => {
+                return video.title.toLowerCase().includes(searchTerm) ||
+                       video.description.toLowerCase().includes(searchTerm) ||
+                       video.tags.toLowerCase().includes(searchTerm);
+            });
+            
+            // Display matching videos
+            if (matchingVideos.length === 0) {
+                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
+            } else {
+                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
+            }
+        }
+        
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoGrid = document.querySelector('.video-grid');
+                if (originalVideoGrid) {
+                    videoGrid.innerHTML = originalVideoGrid;
+                }
+            }
+        });
+        
+        // Load videos data on page load
+        document.addEventListener('DOMContentLoaded', loadAllVideosData);
+        </script><script>
+        let allVideosData = [];
+        let originalVideoGrid = '';
+        
+        // Load all videos data from all pages
+        async function loadAllVideosData() {
+            if (allVideosData.length > 0) return; // Already loaded
+            
+            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page);
+                    if (!response.ok) continue;
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const pageDoc = parser.parseFromString(html, 'text/html');
+                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        const title = card.getAttribute('data-title');
+                        const description = card.getAttribute('data-description');
+                        const tags = card.getAttribute('data-tags');
+                        const link = card.querySelector('a').href;
+                        const img = card.querySelector('img');
+                        
+                        allVideosData.push({
+                            title: title,
+                            description: description,
+                            tags: tags,
+                            link: link,
+                            thumbnail: img ? img.src : '',
+                            html: card.outerHTML,
+                            page: page
+                        });
+                    });
+                } catch (error) {
+                    console.log('Could not load page:', page);
+                }
+            }
+        }
+        
+        async function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const videoGrid = document.querySelector('.video-grid');
+            
+            if (!originalVideoGrid) {
+                originalVideoGrid = videoGrid.innerHTML;
+            }
+            
+            if (searchTerm === '') {
+                // Restore original content
+                videoGrid.innerHTML = originalVideoGrid;
+                return;
+            }
+            
+            // Load all videos data if not already loaded
+            await loadAllVideosData();
+            
+            // Filter videos based on search term
+            const matchingVideos = allVideosData.filter(video => {
+                return video.title.toLowerCase().includes(searchTerm) ||
+                       video.description.toLowerCase().includes(searchTerm) ||
+                       video.tags.toLowerCase().includes(searchTerm);
+            });
+            
+            // Display matching videos
+            if (matchingVideos.length === 0) {
+                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
+            } else {
+                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
+            }
+        }
+        
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoGrid = document.querySelector('.video-grid');
+                if (originalVideoGrid) {
+                    videoGrid.innerHTML = originalVideoGrid;
+                }
+            }
+        });
+        
+        // Load videos data on page load
+        document.addEventListener('DOMContentLoaded', loadAllVideosData);
+        </script><script>
+        let allVideosData = [];
+        let originalVideoGrid = '';
+        
+        // Load all videos data from all pages
+        async function loadAllVideosData() {
+            if (allVideosData.length > 0) return; // Already loaded
+            
+            const pages = ['index.html', 'page2.html', 'page3.html', 'page4.html', 'page5.html', 'page6.html'];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page);
+                    if (!response.ok) continue;
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const pageDoc = parser.parseFromString(html, 'text/html');
+                    const videoCards = pageDoc.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        const title = card.getAttribute('data-title');
+                        const description = card.getAttribute('data-description');
+                        const tags = card.getAttribute('data-tags');
+                        const link = card.querySelector('a').href;
+                        const img = card.querySelector('img');
+                        
+                        allVideosData.push({
+                            title: title,
+                            description: description,
+                            tags: tags,
+                            link: link,
+                            thumbnail: img ? img.src : '',
+                            html: card.outerHTML,
+                            page: page
+                        });
+                    });
+                } catch (error) {
+                    console.log('Could not load page:', page);
+                }
+            }
+        }
+        
+        async function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+            const videoGrid = document.querySelector('.video-grid');
+            
+            if (!originalVideoGrid) {
+                originalVideoGrid = videoGrid.innerHTML;
+            }
+            
+            if (searchTerm === '') {
+                // Restore original content
+                videoGrid.innerHTML = originalVideoGrid;
+                return;
+            }
+            
+            // Load all videos data if not already loaded
+            await loadAllVideosData();
+            
+            // Filter videos based on search term
+            const matchingVideos = allVideosData.filter(video => {
+                return video.title.toLowerCase().includes(searchTerm) ||
+                       video.description.toLowerCase().includes(searchTerm) ||
+                       video.tags.toLowerCase().includes(searchTerm);
+            });
+            
+            // Display matching videos
+            if (matchingVideos.length === 0) {
+                videoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #ccc;"><h3>No videos found</h3><p>Try different search terms</p></div>';
+            } else {
+                videoGrid.innerHTML = matchingVideos.map(video => video.html).join('');
+            }
+        }
+        
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoGrid = document.querySelector('.video-grid');
+                if (originalVideoGrid) {
+                    videoGrid.innerHTML = originalVideoGrid;
+                }
+            }
+        });
+        
+        // Load videos data on page load
+        document.addEventListener('DOMContentLoaded', loadAllVideosData);
+        </script><script>
         let allVideosData = [];
         let originalVideoGrid = '';
         
