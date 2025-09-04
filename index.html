@@ -29,7 +29,17 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Let's start from here" data-description="students 😂" data-tags="doggystyle, doggy style">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="someone's babe" data-description="fuck!!! 🫠" data-tags="doggystyle, doggy style">
+            <a href="videos/someones-babe.html">
+                <div class="thumb-container">
+                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/c2/e6/d0/c2e6d05f5d6f6a10d4b2a352bd52288c/c2e6d05f5d6f6a10d4b2a352bd52288c.6.jpg" alt="someone's babe">
+                </div>
+                <div class="card-content">
+                    <h2>someone's babe</h2>
+                    <p>fuck!!! 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Let's start from here" data-description="students 😂" data-tags="doggystyle, doggy style">
             <a href="videos/lets-start-from-here.html">
                 <div class="thumb-container">
                     <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/97/a7/27/97a727c99ed1e08ee3b84c631fb34be9/97a727c99ed1e08ee3b84c631fb34be9.15.jpg" alt="Let's start from here">
@@ -69,25 +79,15 @@
                     <p>Damn those cheeks are fat 🫠</p>
                 </div>
             </a>
-        </div><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
-            <a href="videos/bbw-desi-wife-homemade.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
-                </div>
-                <div class="card-content">
-                    <h2>Bbw Desi wife homemade</h2>
-                    <p>Damn 🫠</p>
-                </div>
-            </a>
         </div></div>
 
         <!-- Pagination -->
         <div class="pagination-container" style="text-align: center; margin: 30px 0; padding: 20px;">
             <div class="pagination-nav" style="display: inline-flex; gap: 5px; align-items: center;">
                 <span class="page-number current" style="background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">1</span>
-                <a href="page2.html" class="page-number" style="background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a>
+                <a class="page-number" href="/page2" style="background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a>
                 <span style="color: #666; margin: 0 5px;">...</span>
-                <a href="page2.html" class="pagination-btn next-btn" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a>
+                <a class="pagination-btn next-btn" href="/page2" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a>
             </div>
         </div>
 
@@ -147,5 +147,34 @@
         });
   </script>
 
-</body>
-</html>
+
+
+<script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script></body></html>

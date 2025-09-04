@@ -2,7 +2,7 @@
 <html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Thatviralvideo - Hot Videos - Page 2</title>
+    <title>Thatviralvideo - Hot Videos</title>
     <link rel="stylesheet" href="assets/styles.css">
     
     <!-- Netlify Identity Widget -->
@@ -29,8 +29,18 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="African Ghana landlord" data-description="🫠" data-tags="doggystyle, doggy style">
-            <a href="videos/african-ghana-landord.html">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
+            <a href="videos/bbw-desi-wife-homemade.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
+                </div>
+                <div class="card-content">
+                    <h2>Bbw Desi wife homemade</h2>
+                    <p>Damn 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="African Ghana landlord" data-description="🫠" data-tags="doggystyle, doggy style">
+            <a href="videos/african-ghana-landlord.html">
                 <div class="thumb-container">
                     <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/05/09/40/050940784d7da6e73ce1a10344176464-1/050940784d7da6e73ce1a10344176464.23.jpg" alt="African Ghana landlord">
                 </div>
@@ -74,10 +84,10 @@
         <!-- Pagination -->
         <div class="pagination-container" style="text-align: center; margin: 30px 0; padding: 20px;">
             <div class="pagination-nav" style="display: inline-flex; gap: 5px; align-items: center;">
-                <a href="index.html" class="pagination-btn prev-btn" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">← Previous</a>
-                <a href="index.html" class="page-number" style="background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">1</a>
-                <span class="page-number current" style="background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">2</span>
+                <span class="page-number current" style="background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">1</span>
+                <a class="page-number" href="/page2" style="background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a>
                 <span style="color: #666; margin: 0 5px;">...</span>
+                <a class="pagination-btn next-btn" href="/page2" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a>
             </div>
         </div>
 
@@ -137,5 +147,34 @@
         });
   </script>
 
-</body>
-</html>
+
+
+<script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script></body></html>
