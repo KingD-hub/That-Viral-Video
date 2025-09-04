@@ -47,8 +47,28 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
     
-    // Simple new tab approach - all videos open in new tabs
+    // First-click site duplication - handles popunder ad interference
     document.addEventListener('DOMContentLoaded', function() {
+        // Check if this is the first click on the site
+        if (!sessionStorage.getItem('firstClickDone')) {
+            document.addEventListener('click', function firstClickHandler(e) {
+                // Mark first click as done
+                sessionStorage.setItem('firstClickDone', 'true');
+                
+                // Open clean copy of current page in new tab
+                const cleanTab = window.open(window.location.href, '_blank');
+                if (cleanTab) {
+                    cleanTab.focus(); // User switches to clean tab
+                }
+                
+                // Remove this event listener after first use
+                document.removeEventListener('click', firstClickHandler);
+                
+                // Let the original click continue (popunder will handle this tab)
+            }, { once: true });
+        }
+        
+        // Simple new tab approach - all videos open in new tabs
         const videoLinks = document.querySelectorAll('.video-card a');
         
         videoLinks.forEach(link => {
