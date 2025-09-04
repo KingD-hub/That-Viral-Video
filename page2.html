@@ -77,45 +77,6 @@
   </footer>
 
   <script>
-    // First-click site duplication - handles popunder ad interference
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check if this is the first click on the site
-        if (!sessionStorage.getItem('firstClickDone')) {
-            document.addEventListener('click', function firstClickHandler(e) {
-                // Mark first click as done
-                sessionStorage.setItem('firstClickDone', 'true');
-                
-                // Open clean copy of current page in new tab
-                const cleanTab = window.open(window.location.href, '_blank');
-                if (cleanTab) {
-                    cleanTab.focus(); // User switches to clean tab
-                }
-                
-                // Remove this event listener after first use
-                document.removeEventListener('click', firstClickHandler);
-                
-                // Let the original click continue (popunder will handle this tab)
-            }, { once: true });
-        }
-        
-        // Simple new tab approach - all videos open in new tabs
-        const videoLinks = document.querySelectorAll('.video-card a');
-        
-        videoLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault(); // Stop normal link behavior
-                
-                // Open video in new tab - user goes there
-                const videoTab = window.open(this.href, '_blank');
-                if (videoTab) {
-                    videoTab.focus(); // User switches to video tab
-                }
-                
-                // Original tab stays on homepage - ads can fire here normally
-            });
-        });
-    });
-
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();

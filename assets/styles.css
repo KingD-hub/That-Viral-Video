@@ -225,7 +225,6 @@ footer a:hover {
 .site-header {
     background: #0f0f10;
     border-bottom: 1px solid #1e1e20;
-    position: sticky;
     top: 0;
     z-index: 50;
 }
