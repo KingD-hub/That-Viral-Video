@@ -822,7 +822,7 @@ class VideoManager {
 
     async generateVideoPageHTML(videoData, globalIndex) {
         // Load video template
-        const templateResponse = await fetch('../videos/first-video.html');
+        const templateResponse = await fetch('../video-template.html');
         const templateHtml = await templateResponse.text();
         
         const parser = new DOMParser();
