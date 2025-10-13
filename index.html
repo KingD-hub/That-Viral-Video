@@ -49,26 +49,6 @@
                     <p>students 😂</p>
                 </div>
             </a>
-        </div><div class="video-card" data-title="Mature bbw fucking her son" data-description="mom and son 🫠" data-tags="doggy style, doggystyle, mom, son">
-            <a href="videos/mature-bbw-fucking-her-son.html">
-                <div class="thumb-container">
-                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169poster/1d/0e/62/1d0e62ec748dc9ac736ef3257b95ee6b/1d0e62ec748dc9ac736ef3257b95ee6b.11.jpg" alt="Mature bbw fucking her son">
-                </div>
-                <div class="card-content">
-                    <h2>Mature bbw fucking her son</h2>
-                    <p>mom and son 🫠</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="Amsterdam Arab girl hijab fucked hard while husband is away" data-description="🫠" data-tags="doggy style, big ass">
-            <a href="videos/amsterdam-arab-girl-hijab-fucked-hard-while-husban.html">
-                <div class="thumb-container">
-                    <img src="https://ei.phncdn.com/videos/202409/19/458000981/original/(m=e0YHGgaaaa)(mh=YgZUN7qQ91u2Zb2C)9.jpg" alt="Amsterdam Arab girl hijab fucked hard while husband is away">
-                </div>
-                <div class="card-content">
-                    <h2>Amsterdam Arab girl hijab fucked hard while husband is away</h2>
-                    <p>🫠</p>
-                </div>
-            </a>
         </div><div class="video-card" data-title="Bbw Monica bhabhi big ass" data-description="Damn those cheeks are fat 🫠" data-tags="doggy style, fat ass">
             <a href="videos/bbw-monica-bhabhi-big-ass.html">
                 <div class="thumb-container">
@@ -77,6 +57,26 @@
                 <div class="card-content">
                     <h2>Bbw Monica bhabhi big ass</h2>
                     <p>Damn those cheeks are fat 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
+            <a href="videos/bbw-desi-wife-homemade.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
+                </div>
+                <div class="card-content">
+                    <h2>Bbw Desi wife homemade</h2>
+                    <p>Damn 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="African Ghana landlord" data-description="🫠" data-tags="doggystyle, doggy style">
+            <a href="videos/african-ghana-landlord.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/05/09/40/050940784d7da6e73ce1a10344176464-1/050940784d7da6e73ce1a10344176464.23.jpg" alt="African Ghana landlord">
+                </div>
+                <div class="card-content">
+                    <h2>African Ghana landlord</h2>
+                    <p>🫠</p>
                 </div>
             </a>
         </div></div>
@@ -174,6 +174,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
