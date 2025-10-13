@@ -40,6 +40,7 @@
     function createTheaterButton() {
         // Check if button already exists
         if (document.querySelector('.theater-btn')) {
+            console.log('Theater Mode: Button already exists');
             return;
         }
         
@@ -58,7 +59,6 @@
         const button = document.createElement('button');
         button.className = 'theater-btn';
         button.title = 'Theater Mode';
-        button.onclick = window.toggleTheaterMode;
         button.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -68,6 +68,20 @@
         `;
         
         playerWrap.appendChild(button);
+        
+        // Add click event listener after button is created
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Theater button clicked');
+            if (window.toggleTheaterMode) {
+                window.toggleTheaterMode();
+            } else {
+                console.error('toggleTheaterMode function not found');
+            }
+        });
+        
+        console.log('Theater Mode: Button created and event listener added');
     }
     
     function initTheaterFunctionality() {
@@ -76,9 +90,12 @@
         
         // Make toggleTheaterMode globally available
         window.toggleTheaterMode = function() {
+            console.log('toggleTheaterMode called, current state:', isTheaterMode);
             const playerWrap = document.getElementById('playerWrap') || document.querySelector('.player-wrap');
             const btn = document.querySelector('.theater-btn');
             const body = document.body;
+            
+            console.log('Elements found:', { playerWrap: !!playerWrap, btn: !!btn, body: !!body });
             
             if (!playerWrap || !btn) {
                 console.error('Theater Mode: Required elements not found', { playerWrap, btn });
@@ -86,6 +103,7 @@
             }
             
             isTheaterMode = !isTheaterMode;
+            console.log('New theater mode state:', isTheaterMode);
             
             if (isTheaterMode) {
                 playerWrap.classList.add('theater-mode');
