@@ -478,40 +478,47 @@ class VideoManager {
     }
 
     updatePagination(doc, currentPage, totalPages) {
-        const pagination = doc.querySelector('.pagination');
-        if (!pagination) return;
+        const paginationNav = doc.querySelector('.pagination-nav');
+        if (!paginationNav) return;
         
-        pagination.innerHTML = '';
+        paginationNav.innerHTML = '';
         
         // Previous button
         if (currentPage > 1) {
             const prevLink = document.createElement('a');
+            prevLink.className = 'pagination-btn prev-btn';
             prevLink.href = currentPage === 2 ? 'index.html' : `page${currentPage - 1}.html`;
             prevLink.textContent = '← Previous';
-            pagination.appendChild(prevLink);
+            prevLink.style.cssText = 'background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;';
+            paginationNav.appendChild(prevLink);
         }
         
         // Page numbers
         for (let i = 1; i <= totalPages; i++) {
             if (i === currentPage) {
                 const current = document.createElement('span');
-                current.className = 'current';
+                current.className = 'page-number current';
                 current.textContent = i;
-                pagination.appendChild(current);
+                current.style.cssText = 'background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;';
+                paginationNav.appendChild(current);
             } else {
                 const link = document.createElement('a');
+                link.className = 'page-number';
                 link.href = i === 1 ? 'index.html' : `page${i}.html`;
                 link.textContent = i;
-                pagination.appendChild(link);
+                link.style.cssText = 'background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;';
+                paginationNav.appendChild(link);
             }
         }
         
         // Next button
         if (currentPage < totalPages) {
             const nextLink = document.createElement('a');
+            nextLink.className = 'pagination-btn next-btn';
             nextLink.href = `page${currentPage + 1}.html`;
             nextLink.textContent = 'Next →';
-            pagination.appendChild(nextLink);
+            nextLink.style.cssText = 'background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;';
+            paginationNav.appendChild(nextLink);
         }
     }
 
