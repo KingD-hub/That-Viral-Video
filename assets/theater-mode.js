@@ -44,11 +44,21 @@
     }
     
     function createTheaterButton() {
-        const videoContainer = document.getElementById('videoContainer') || document.querySelector('.video-container');
-        
         // Check if button already exists
         if (document.querySelector('.theater-btn')) {
             return;
+        }
+        
+        // Find the player-wrap container (this should have position: relative)
+        const playerWrap = document.getElementById('playerWrap') || document.querySelector('.player-wrap');
+        if (!playerWrap) {
+            console.error('Theater Mode: Could not find player-wrap container');
+            return;
+        }
+        
+        // Ensure player-wrap has position relative
+        if (window.getComputedStyle(playerWrap).position === 'static') {
+            playerWrap.style.position = 'relative';
         }
         
         const button = document.createElement('button');
@@ -63,7 +73,7 @@
             </svg>
         `;
         
-        videoContainer.appendChild(button);
+        playerWrap.appendChild(button);
     }
     
     function initTheaterFunctionality() {
