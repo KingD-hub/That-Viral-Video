@@ -561,17 +561,22 @@ class VideoManager {
             otherVideos.forEach(video => {
                 const videoTags = video.tags ? video.tags.toLowerCase().split(',').map(t => t.trim()) : [];
                 let matchScore = 0;
+                const matchedTags = [];
                 
                 currentTags.forEach(currentTag => {
                     videoTags.forEach(videoTag => {
                         if (videoTag.includes(currentTag) || currentTag.includes(videoTag)) {
                             matchScore++;
+                            // Add matched tag if not already in the list
+                            if (!matchedTags.includes(videoTag)) {
+                                matchedTags.push(videoTag);
+                            }
                         }
                     });
                 });
                 
                 if (matchScore > 0) {
-                    relatedVideos.push({ video, matchScore });
+                    relatedVideos.push({ video, matchScore, matchedTags });
                 }
             });
             
@@ -582,14 +587,14 @@ class VideoManager {
         // If no tag matches found, fall back to recent videos
         if (relatedVideos.length === 0) {
             otherVideos.slice(0, 6).forEach(video => {
-                relatedVideos.push({ video, matchScore: 0 });
+                relatedVideos.push({ video, matchScore: 0, matchedTags: [] });
             });
         }
         
         // Show up to 6 related videos
         const videosToShow = relatedVideos.slice(0, 6);
         
-        videosToShow.forEach(({ video, matchScore }) => {
+        videosToShow.forEach(({ video, matchScore, matchedTags }) => {
             const relatedIndex = this.videosData.findIndex(v => v === video) + 1;
             const videoFileName = this.generateVideoFileName(video.title, relatedIndex);
             
@@ -597,13 +602,18 @@ class VideoManager {
             cardDiv.className = 'card';
             cardDiv.href = videoFileName;
             
+            // Format matched tags for display
+            const tagsDisplay = matchedTags.length > 0 
+                ? `<p style="font-size: 11px; color: #999; margin-top: 5px;">${matchedTags.join(', ')}</p>` 
+                : '';
+            
             cardDiv.innerHTML = `
                 <div class="thumb">
                     <img src="${video.thumbnail}" alt="${video.title}" loading="lazy" />
                 </div>
                 <div class="card-body">
                     <h3>${video.title}</h3>
-                    ${matchScore > 0 ? `<p style="font-size: 12px; color: #999; margin-top: 5px;">${matchScore} tag match${matchScore > 1 ? 'es' : ''}</p>` : ''}
+                    ${tagsDisplay}
                 </div>
             `;
             
