@@ -552,10 +552,44 @@ class VideoManager {
         // Get other videos (excluding current one)
         const otherVideos = this.videosData.filter((_, index) => index !== currentIndex - 1);
         
-        // Show up to 2 related videos
-        const relatedVideos = otherVideos.slice(0, 2);
+        // Tag-based matching: Find videos with similar tags
+        const currentTags = currentVideo.tags ? currentVideo.tags.toLowerCase().split(',').map(t => t.trim()) : [];
+        const relatedVideos = [];
         
-        relatedVideos.forEach((video, index) => {
+        if (currentTags.length > 0) {
+            // Score each video based on tag matches
+            otherVideos.forEach(video => {
+                const videoTags = video.tags ? video.tags.toLowerCase().split(',').map(t => t.trim()) : [];
+                let matchScore = 0;
+                
+                currentTags.forEach(currentTag => {
+                    videoTags.forEach(videoTag => {
+                        if (videoTag.includes(currentTag) || currentTag.includes(videoTag)) {
+                            matchScore++;
+                        }
+                    });
+                });
+                
+                if (matchScore > 0) {
+                    relatedVideos.push({ video, matchScore });
+                }
+            });
+            
+            // Sort by match score (highest first)
+            relatedVideos.sort((a, b) => b.matchScore - a.matchScore);
+        }
+        
+        // If no tag matches found, fall back to recent videos
+        if (relatedVideos.length === 0) {
+            otherVideos.slice(0, 6).forEach(video => {
+                relatedVideos.push({ video, matchScore: 0 });
+            });
+        }
+        
+        // Show up to 6 related videos
+        const videosToShow = relatedVideos.slice(0, 6);
+        
+        videosToShow.forEach(({ video, matchScore }) => {
             const relatedIndex = this.videosData.findIndex(v => v === video) + 1;
             const videoFileName = this.generateVideoFileName(video.title, relatedIndex);
             
@@ -569,6 +603,7 @@ class VideoManager {
                 </div>
                 <div class="card-body">
                     <h3>${video.title}</h3>
+                    ${matchScore > 0 ? `<p style="font-size: 12px; color: #999; margin-top: 5px;">${matchScore} tag match${matchScore > 1 ? 'es' : ''}</p>` : ''}
                 </div>
             `;
             
@@ -832,6 +867,15 @@ class VideoManager {
         doc.title = `Watch — ${videoData.title}`;
         const h1 = doc.querySelector('h1');
         if (h1) h1.textContent = videoData.title;
+        
+        // Add meta tags for video tags (for tag-based recommendations)
+        const head = doc.querySelector('head');
+        if (head && videoData.tags) {
+            const tagsMeta = doc.createElement('meta');
+            tagsMeta.setAttribute('name', 'tags');
+            tagsMeta.setAttribute('content', videoData.tags);
+            head.appendChild(tagsMeta);
+        }
         
         // Update video embed - CRITICAL: Use the specific embed for this video
         const playerDiv = doc.querySelector('.responsive-embed');
