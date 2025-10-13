@@ -455,39 +455,51 @@ footer a:hover {
 
 /* Theater mode styles */
 .theater-mode {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    background: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .theater-mode .responsive-embed {
-    position: relative;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
     max-width: none !important;
     max-height: none !important;
+    padding: 0 !important;
     padding-bottom: 0 !important;
-    border-radius: 0;
-    margin: 0;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
 }
 
 .theater-mode iframe,
 .theater-mode video {
-    width: 100% !important;
-    height: 100% !important;
-    position: absolute !important;
+    position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    object-fit: contain;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
 }
 
 /* Hide other content when theater mode is active */
