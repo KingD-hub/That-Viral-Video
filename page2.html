@@ -84,10 +84,8 @@
         <!-- Pagination -->
         <div class="pagination-container" style="text-align: center; margin: 30px 0; padding: 20px;">
             <div class="pagination-nav" style="display: inline-flex; gap: 5px; align-items: center;">
-                <a href="index.html" class="pagination-btn prev-btn" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">← Previous</a>
-                <a href="index.html" class="page-number" style="background: #333; color: #ccc; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">1</a>
-                <span class="page-number-active" style="background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold; border: 2px solid #ff6b6b;">2</span>
-                <span style="color: #666; margin: 0 5px;">...</span>
+                <span class="page-number current" style="background: #ff6b6b; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">1</span>
+                <a class="page-number" href="/page2" style="background: #333; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a>
                 <span style="color: #666; margin: 0 5px;">...</span>
                 <a class="pagination-btn next-btn" href="/page2" style="background: #555; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a>
             </div>
@@ -151,6 +149,35 @@
 
 
 
+<script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script>
 <script>
         // Search functionality
         function searchVideos() {
