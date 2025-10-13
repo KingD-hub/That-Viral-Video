@@ -16,23 +16,17 @@
     
     function initTheaterMode() {
         // Find video containers automatically
-        const playerWrap = document.querySelector('.player-wrap') || document.querySelector('[id*="player"]') || document.querySelector('.responsive-embed').parentElement;
-        const videoContainer = document.querySelector('.responsive-embed') || document.querySelector('iframe') || document.querySelector('video');
+        const playerWrap = document.querySelector('.player-wrap') || document.querySelector('[id*="player"]');
+        const responsiveEmbed = document.querySelector('.responsive-embed');
         
-        if (!playerWrap || !videoContainer) {
+        if (!playerWrap || !responsiveEmbed) {
             console.log('Theater Mode: No video container found');
             return;
         }
         
         // Add required IDs if they don't exist
         if (!playerWrap.id) playerWrap.id = 'playerWrap';
-        if (!videoContainer.parentElement.classList.contains('video-container')) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'video-container';
-            wrapper.id = 'videoContainer';
-            videoContainer.parentElement.insertBefore(wrapper, videoContainer);
-            wrapper.appendChild(videoContainer);
-        }
+        if (!responsiveEmbed.id) responsiveEmbed.id = 'videoContainer';
         
         // Create and inject theater mode button
         createTheaterButton();
@@ -82,13 +76,12 @@
         
         // Make toggleTheaterMode globally available
         window.toggleTheaterMode = function() {
-            const playerWrap = document.getElementById('playerWrap');
-            const container = document.getElementById('videoContainer');
+            const playerWrap = document.getElementById('playerWrap') || document.querySelector('.player-wrap');
             const btn = document.querySelector('.theater-btn');
             const body = document.body;
             
-            if (!playerWrap || !container || !btn) {
-                console.error('Theater Mode: Required elements not found');
+            if (!playerWrap || !btn) {
+                console.error('Theater Mode: Required elements not found', { playerWrap, btn });
                 return;
             }
             
