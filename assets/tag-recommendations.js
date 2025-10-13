@@ -153,7 +153,10 @@
                     // Exact match or partial match
                     if (videoTag.includes(currentTag) || currentTag.includes(videoTag)) {
                         matchScore++;
-                        matchedTags.push(videoTag);
+                        // Add matched tag if not already in the list
+                        if (!matchedTags.includes(videoTag)) {
+                            matchedTags.push(videoTag);
+                        }
                     }
                 });
             });
@@ -203,6 +206,11 @@
         
         // Add new tag-based recommendations
         recommendations.forEach(video => {
+            // Format matched tags for display
+            const tagsDisplay = video.matchedTags && video.matchedTags.length > 0
+                ? `<p style="font-size: 11px; color: #999; margin-top: 5px;">${video.matchedTags.join(', ')}</p>`
+                : '';
+            
             const cardHTML = `
                 <a class="card" href="${video.href}">
                     <div class="thumb">
@@ -210,9 +218,7 @@
                     </div>
                     <div class="card-body">
                         <h3>${video.title}</h3>
-                        <p style="font-size: 12px; color: #999; margin-top: 5px;">
-                            ${video.matchScore} tag match${video.matchScore > 1 ? 'es' : ''}
-                        </p>
+                        ${tagsDisplay}
                     </div>
                 </a>
             `;
