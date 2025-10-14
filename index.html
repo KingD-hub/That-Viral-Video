@@ -29,10 +29,20 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Curvy 3D mom deepthroats son's dick" data-description="Damn mom🤤" data-tags="blow job,mom">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Standing doggy on stairs" data-description="spreading big yansh on stairs" data-tags="doggystyle, big yansh, fat ass">
+            <a href="videos/standing-doggy-on-stairs.html">
+                <div class="thumb-container">
+                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/db/7c/d4/db7cd4fe47310c82c52fac9e9162d685/db7cd4fe47310c82c52fac9e9162d685.10.jpg" alt="Standing doggy on stairs">
+                </div>
+                <div class="card-content">
+                    <h2>Standing doggy on stairs</h2>
+                    <p>spreading big yansh on stairs</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Curvy 3D mom deepthroats son's dick" data-description="Damn mom🤤" data-tags="blow job,mom">
             <a href="videos/curvy-3d-mom-deepthroats-sons-dick.html">
                 <div class="thumb-container">
-                    <img src="&lt;img src=" https:="" drive.google.com="" thumbnail?id="1nE81pCqBX7pGx6CVDTzU55EQXpbGaNGl&quot;" width="640" height="480" alt="Video Thumbnail">" alt="Curvy 3D mom deepthroats son's dick"&gt;
+                    <img src="https://thatviralvideo.netlify.app/admin/%3Cimg%20src=" alt="Curvy 3D mom deepthroats son's dick">
                 </div>
                 <div class="card-content">
                     <h2>Curvy 3D mom deepthroats son's dick</h2>
@@ -67,16 +77,6 @@
                 <div class="card-content">
                     <h2>Let's start from here</h2>
                     <p>students 😂</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="Bbw Monica bhabhi big ass" data-description="Damn those cheeks are fat 🫠" data-tags="doggy style, fat ass">
-            <a href="videos/bbw-monica-bhabhi-big-ass.html">
-                <div class="thumb-container">
-                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169poster/2b/32/c9/2b32c9415ea30579e8b89ca70757d9bd-3/2b32c9415ea30579e8b89ca70757d9bd.20.jpg" alt="Bbw Monica bhabhi big ass">
-                </div>
-                <div class="card-content">
-                    <h2>Bbw Monica bhabhi big ass</h2>
-                    <p>Damn those cheeks are fat 🫠</p>
                 </div>
             </a>
         </div></div>
@@ -174,6 +174,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();

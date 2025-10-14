@@ -29,7 +29,17 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Bbw Monica bhabhi big ass" data-description="Damn those cheeks are fat 🫠" data-tags="doggy style, fat ass">
+            <a href="videos/bbw-monica-bhabhi-big-ass.html">
+                <div class="thumb-container">
+                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169poster/2b/32/c9/2b32c9415ea30579e8b89ca70757d9bd-3/2b32c9415ea30579e8b89ca70757d9bd.20.jpg" alt="Bbw Monica bhabhi big ass">
+                </div>
+                <div class="card-content">
+                    <h2>Bbw Monica bhabhi big ass</h2>
+                    <p>Damn those cheeks are fat 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
             <a href="videos/bbw-desi-wife-homemade.html">
                 <div class="thumb-container">
                     <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
@@ -164,6 +174,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
