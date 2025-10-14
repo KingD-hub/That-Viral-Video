@@ -29,7 +29,17 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Standing doggy on stairs" data-description="spreading big yansh on stairs" data-tags="doggystyle, big yansh, fat ass">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Someone's babe" data-description="omo🍑🤤" data-tags="doggystyle, bendover">
+            <a href="videos/someones-babe.html">
+                <div class="thumb-container">
+                    <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/39/8f/08/398f0884ec32e538609e64340e1d0aaa/398f0884ec32e538609e64340e1d0aaa.15.jpg" alt="Someone's babe">
+                </div>
+                <div class="card-content">
+                    <h2>Someone's babe</h2>
+                    <p>omo🍑🤤</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Standing doggy on stairs" data-description="spreading big yansh on stairs" data-tags="doggystyle, big yansh, fat ass">
             <a href="videos/standing-doggy-on-stairs.html">
                 <div class="thumb-container">
                     <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/db/7c/d4/db7cd4fe47310c82c52fac9e9162d685/db7cd4fe47310c82c52fac9e9162d685.10.jpg" alt="Standing doggy on stairs">
@@ -69,21 +79,11 @@
                     <p>fuck!!! 🫠</p>
                 </div>
             </a>
-        </div><div class="video-card" data-title="Let's start from here" data-description="students 😂" data-tags="doggystyle, doggy style">
-            <a href="videos/lets-start-from-here.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/97/a7/27/97a727c99ed1e08ee3b84c631fb34be9/97a727c99ed1e08ee3b84c631fb34be9.15.jpg" alt="Let's start from here">
-                </div>
-                <div class="card-content">
-                    <h2>Let's start from here</h2>
-                    <p>students 😂</p>
-                </div>
-            </a>
         </div></div>
 
         <!-- Pagination -->
         <div class="pagination-container" style="text-align: center; margin: 30px 0; padding: 20px;">
-            <div class="pagination-nav" style="display: inline-flex; gap: 5px; align-items: center;"><span class="page-number current" style="background: rgb(255, 107, 107); color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">1</span><a class="page-number" href="page2.html" style="background: rgb(51, 51, 51); color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a><a class="pagination-btn next-btn" href="page2.html" style="background: rgb(85, 85, 85); color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a></div>
+            <div class="pagination-nav" style="display: inline-flex; gap: 5px; align-items: center;"><span class="page-number current" style="background: rgb(255, 107, 107); color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold;">1</span><a class="page-number" href="page2.html" style="background: rgb(51, 51, 51); color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">2</a><a class="page-number" href="page3.html" style="background: rgb(51, 51, 51); color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; transition: background 0.3s;">3</a><a class="pagination-btn next-btn" href="page2.html" style="background: rgb(85, 85, 85); color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background 0.3s;">Next →</a></div>
         </div>
 
         <!-- Native Banner Ad -->
@@ -343,6 +343,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
