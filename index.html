@@ -29,7 +29,27 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="time with her bestie" data-description="fuck!!! 🫠" data-tags="doggystyle, doggy style">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Curvy 3D mom deepthroats son's dick" data-description="Damn mom🤤" data-tags="blow job,mom">
+            <a href="videos/curvy-3d-mom-deepthroats-sons-dick.html">
+                <div class="thumb-container">
+                    <img src="&lt;img src=" https:="" drive.google.com="" thumbnail?id="1nE81pCqBX7pGx6CVDTzU55EQXpbGaNGl&quot;" width="640" height="480" alt="Video Thumbnail">" alt="Curvy 3D mom deepthroats son's dick"&gt;
+                </div>
+                <div class="card-content">
+                    <h2>Curvy 3D mom deepthroats son's dick</h2>
+                    <p>Damn mom🤤</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Pounded like veggie" data-description="that yansh fat🍑🤤" data-tags="fat ass">
+            <a href="videos/pounded-like-veggie.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/83/b5/56/83b55670e65216da0d1bd6363b9ca8cd/83b55670e65216da0d1bd6363b9ca8cd.15.jpg" alt="Pounded like veggie">
+                </div>
+                <div class="card-content">
+                    <h2>Pounded like veggie</h2>
+                    <p>that yansh fat🍑🤤</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="time with her bestie" data-description="fuck!!! 🫠" data-tags="doggystyle, doggy style">
             <a href="videos/time-with-her-bestie.html">
                 <div class="thumb-container">
                     <img src="https://cdn77-pic.xvideos-cdn.com/videos/thumbs169lll/c2/e6/d0/c2e6d05f5d6f6a10d4b2a352bd52288c/c2e6d05f5d6f6a10d4b2a352bd52288c.6.jpg" alt="time with her bestie">
@@ -57,26 +77,6 @@
                 <div class="card-content">
                     <h2>Bbw Monica bhabhi big ass</h2>
                     <p>Damn those cheeks are fat 🫠</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
-            <a href="videos/bbw-desi-wife-homemade.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
-                </div>
-                <div class="card-content">
-                    <h2>Bbw Desi wife homemade</h2>
-                    <p>Damn 🫠</p>
-                </div>
-            </a>
-        </div><div class="video-card" data-title="African Ghana landlord" data-description="🫠" data-tags="doggystyle, doggy style">
-            <a href="videos/african-ghana-landlord.html">
-                <div class="thumb-container">
-                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/05/09/40/050940784d7da6e73ce1a10344176464-1/050940784d7da6e73ce1a10344176464.23.jpg" alt="African Ghana landlord">
-                </div>
-                <div class="card-content">
-                    <h2>African Ghana landlord</h2>
-                    <p>🫠</p>
                 </div>
             </a>
         </div></div>
@@ -174,6 +174,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();

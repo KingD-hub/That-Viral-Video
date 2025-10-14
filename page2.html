@@ -29,7 +29,27 @@
     </div>
 
     <main>
-        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Put my wife in doggy style and filled her pussy with cum" data-description="Wife getting filled 🫠" data-tags="doggystyle, wife, creampie">
+        <div class="video-grid" id="videoGrid"><div class="video-card" data-title="Bbw Desi wife homemade" data-description="Damn 🫠" data-tags="doggy style, doggystyle, fat ass">
+            <a href="videos/bbw-desi-wife-homemade.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169poster/41/f1/90/41f1909e201f47fd29703942828b896c-2/41f1909e201f47fd29703942828b896c.6.jpg" alt="Bbw Desi wife homemade">
+                </div>
+                <div class="card-content">
+                    <h2>Bbw Desi wife homemade</h2>
+                    <p>Damn 🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="African Ghana landlord" data-description="🫠" data-tags="doggystyle, doggy style">
+            <a href="videos/african-ghana-landlord.html">
+                <div class="thumb-container">
+                    <img src="https://gcore-pic.xvideos-cdn.com/videos/thumbs169lll/05/09/40/050940784d7da6e73ce1a10344176464-1/050940784d7da6e73ce1a10344176464.23.jpg" alt="African Ghana landlord">
+                </div>
+                <div class="card-content">
+                    <h2>African Ghana landlord</h2>
+                    <p>🫠</p>
+                </div>
+            </a>
+        </div><div class="video-card" data-title="Put my wife in doggy style and filled her pussy with cum" data-description="Wife getting filled 🫠" data-tags="doggystyle, wife, creampie">
             <a href="videos/put-my-wife-in-doggy-style-and-filled-her-pussy-wi.html">
                 <div class="thumb-container">
                     <img src="https://fi1-ph.ypncdn.com/videos/202409/30/458480911/original/(m=eafT8f)(mh=c4uXkopV4vfDQC_x)11.jpg" alt="Put my wife in doggy style and filled her pussy with cum">
@@ -144,6 +164,34 @@
         });
         </script>
 <script>
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const videoCards = document.querySelectorAll('.video-card');
+            
+            videoCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                const description = card.getAttribute('data-description').toLowerCase();
+                const tags = card.getAttribute('data-tags').toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Clear search when search box is empty
+        document.getElementById('searchBox').addEventListener('input', function() {
+            if (this.value === '') {
+                const videoCards = document.querySelectorAll('.video-card');
+                videoCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        </script><script>
         // Search functionality
         function searchVideos() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
